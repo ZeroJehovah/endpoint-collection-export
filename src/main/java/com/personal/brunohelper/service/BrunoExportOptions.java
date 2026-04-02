@@ -143,14 +143,13 @@ public final class BrunoExportOptions {
         }
 
         List<String> executableNames = new ArrayList<>();
-        executableNames.add(commandName);
-
         String lowerCaseCommandName = commandName.toLowerCase(Locale.ROOT);
         for (String extension : splitPathExtensions(pathExtEnv)) {
             if (!lowerCaseCommandName.endsWith(extension.toLowerCase(Locale.ROOT))) {
                 executableNames.add(commandName + extension);
             }
         }
+        executableNames.add(commandName);
 
         for (String pathEntry : splitPathEntries(pathEnv)) {
             Path directory = parsePath(pathEntry);

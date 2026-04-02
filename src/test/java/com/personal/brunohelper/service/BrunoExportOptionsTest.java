@@ -62,4 +62,19 @@ class BrunoExportOptionsTest {
 
         assertEquals(bruCommand.toString(), resolved);
     }
+
+    @Test
+    void shouldPreferCmdOverShellScriptOnWindowsPath(@TempDir Path tempDir) throws IOException {
+        Path npmBinDirectory = Files.createDirectories(tempDir.resolve("npm-bin"));
+        Files.createFile(npmBinDirectory.resolve("bru"));
+        Path bruCommand = Files.createFile(npmBinDirectory.resolve("bru.cmd"));
+
+        String resolved = BrunoExportOptions.resolveCommandOnWindows(
+                "bru",
+                npmBinDirectory.toString(),
+                ".COM;.EXE;.BAT;.CMD"
+        );
+
+        assertEquals(bruCommand.toString(), resolved);
+    }
 }
