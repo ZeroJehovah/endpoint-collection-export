@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 public final class BrunoControllerExportService implements ControllerExportService {
 
     private static final long CLI_TIMEOUT_SECONDS = 60L;
+    private static final String BRU_COMMAND = "bru";
 
     private final Project project;
     private final SpringControllerParser parser = new SpringControllerParser();
@@ -59,16 +60,11 @@ public final class BrunoControllerExportService implements ControllerExportServi
             return ExportOutcome.failure("创建 Bruno 输出目录失败: " + exception.getMessage());
         }
 
-        String bruCliPath = resolveBruCliPath(settings);
-        if (bruCliPath == null) {
-            String suffix = maybeKeepTemporaryFile(openApiFile, settings, true);
-            return ExportOutcome.failure("未找到 Bruno CLI，请先配置有效的 Bruno CLI 命令或可执行文件路径。" + suffix);
-        }
         String collectionName = deriveCollectionName(openApiDocument.getControllerName());
 
         ProcessResult processResult;
         try {
-            processResult = runBruImport(bruCliPath, openApiFile, outputDirectory, collectionName);
+            processResult = runBruImport(openApiFile, outputDirectory, collectionName);
         } catch (IOException exception) {
             String suffix = maybeKeepTemporaryFile(openApiFile, settings, true);
             return ExportOutcome.failure("执行 Bruno CLI 失败: " + exception.getMessage() + suffix);
@@ -111,14 +107,10 @@ public final class BrunoControllerExportService implements ControllerExportServi
         return BrunoExportOptions.resolveOutputDirectory(project.getBasePath(), settings.getCollectionOutputDirectory());
     }
 
-    private String resolveBruCliPath(BrunoHelperSettingsState settings) {
-        return BrunoExportOptions.resolveBruCliPath(settings.getBruCliPath());
-    }
-
-    private ProcessResult runBruImport(String bruCliPath, Path openApiFile, Path outputDirectory, String collectionName)
+    private ProcessResult runBruImport(Path openApiFile, Path outputDirectory, String collectionName)
             throws IOException, InterruptedException {
         List<String> command = new ArrayList<>();
-        command.add(bruCliPath);
+        command.add(BRU_COMMAND);
         command.add("import");
         command.add("openapi");
         command.add("--source");

@@ -24,18 +24,9 @@ public final class BrunoHelperSettingsState implements PersistentStateComponent<
     @Override
     public void loadState(@NotNull State state) {
         this.state = state;
-        this.state.bruCliPath = normalizeBruCliPath(this.state.bruCliPath);
         this.state.collectionOutputDirectory = this.state.collectionOutputDirectory == null
                 ? ""
                 : this.state.collectionOutputDirectory.trim();
-    }
-
-    public String getBruCliPath() {
-        return normalizeBruCliPath(state.bruCliPath);
-    }
-
-    public void setBruCliPath(String bruCliPath) {
-        state.bruCliPath = normalizeBruCliPath(bruCliPath);
     }
 
     public String getCollectionOutputDirectory() {
@@ -55,15 +46,7 @@ public final class BrunoHelperSettingsState implements PersistentStateComponent<
     }
 
     public static final class State {
-        public String bruCliPath = "";
         public String collectionOutputDirectory = "";
         public boolean keepTemporaryOpenApiFile = false;
-    }
-
-    private static String normalizeBruCliPath(String bruCliPath) {
-        if (bruCliPath == null) {
-            return "";
-        }
-        return bruCliPath.trim();
     }
 }
