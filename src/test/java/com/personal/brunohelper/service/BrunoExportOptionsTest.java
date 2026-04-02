@@ -1,10 +1,15 @@
 package com.personal.brunohelper.service;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class BrunoExportOptionsTest {
 
@@ -16,10 +21,22 @@ class BrunoExportOptionsTest {
     }
 
     @Test
-    void shouldResolveRelativeCliPathAgainstProject() {
-        String cliPath = BrunoExportOptions.resolveBruCliPath("/workspace/demo", "tools/bru");
+    void shouldTreatLegacyBruCommandAsMissingConfiguration() {
+        assertFalse(BrunoExportOptions.hasConfiguredBruCliPath("bru"));
+        assertNull(BrunoExportOptions.resolveBruCliPath("bru"));
+    }
 
-        assertEquals(Path.of("/workspace/demo/tools/bru").toString(), cliPath);
+    @Test
+    void shouldRejectRelativeBruInstallationPath() {
+        assertEquals("Bruno 安装路径必须是本机绝对路径。", BrunoExportOptions.validateBruCliPath("tools/bru", false));
+    }
+
+    @Test
+    void shouldResolveExecutableInsideConfiguredDirectory(@TempDir Path tempDir) throws IOException {
+        Path bruExecutable = Files.createFile(tempDir.resolve("bru.cmd"));
+
+        assertEquals(bruExecutable, BrunoExportOptions.resolveBruCliPath(tempDir.toString()));
+        assertNull(BrunoExportOptions.validateBruCliPath(tempDir.toString(), false));
     }
 
     @Test

@@ -24,14 +24,18 @@ public final class BrunoHelperSettingsState implements PersistentStateComponent<
     @Override
     public void loadState(@NotNull State state) {
         this.state = state;
+        this.state.bruCliPath = normalizeBruCliPath(this.state.bruCliPath);
+        this.state.collectionOutputDirectory = this.state.collectionOutputDirectory == null
+                ? ""
+                : this.state.collectionOutputDirectory.trim();
     }
 
     public String getBruCliPath() {
-        return state.bruCliPath;
+        return normalizeBruCliPath(state.bruCliPath);
     }
 
     public void setBruCliPath(String bruCliPath) {
-        state.bruCliPath = bruCliPath == null ? "" : bruCliPath.trim();
+        state.bruCliPath = normalizeBruCliPath(bruCliPath);
     }
 
     public String getCollectionOutputDirectory() {
@@ -51,8 +55,16 @@ public final class BrunoHelperSettingsState implements PersistentStateComponent<
     }
 
     public static final class State {
-        public String bruCliPath = "bru";
+        public String bruCliPath = "";
         public String collectionOutputDirectory = "";
         public boolean keepTemporaryOpenApiFile = false;
+    }
+
+    private static String normalizeBruCliPath(String bruCliPath) {
+        if (bruCliPath == null) {
+            return "";
+        }
+        String normalized = bruCliPath.trim();
+        return "bru".equalsIgnoreCase(normalized) ? "" : normalized;
     }
 }

@@ -12,7 +12,10 @@ import com.intellij.psi.SmartPsiElementPointer;
 import com.personal.brunohelper.context.ControllerContextResolver;
 import com.personal.brunohelper.model.ExportOutcome;
 import com.personal.brunohelper.notification.BrunoHelperNotifier;
+import com.personal.brunohelper.service.BrunoExportOptions;
 import com.personal.brunohelper.service.BrunoControllerExportService;
+import com.personal.brunohelper.settings.BrunoHelperSettingsState;
+import com.personal.brunohelper.settings.BrunoInstallationPathDialog;
 import org.jetbrains.annotations.NotNull;
 
 public final class ExportControllerToBrunoAction extends AnAction {
@@ -36,6 +39,10 @@ public final class ExportControllerToBrunoAction extends AnAction {
             return;
         }
         BrunoControllerExportService exportService = new BrunoControllerExportService(project);
+        if (!ensureBrunoCliPathConfigured(project)) {
+            BrunoHelperNotifier.warn(project, "已取消导出，未完成 Bruno 安装路径配置。");
+            return;
+        }
         SmartPsiElementPointer<PsiClass> controllerPointer = exportService.createPointer(controllerClass);
 
         ProgressManager.getInstance().run(new Task.Backgroundable(project, "导出到 Bruno", false) {
@@ -49,5 +56,22 @@ public final class ExportControllerToBrunoAction extends AnAction {
                 }
             }
         });
+    }
+
+    private boolean ensureBrunoCliPathConfigured(Project project) {
+        BrunoHelperSettingsState settings = BrunoHelperSettingsState.getInstance();
+        String configuredPath = settings.getBruCliPath();
+        String validationError = BrunoExportOptions.validateBruCliPath(configuredPath, true);
+        if (BrunoExportOptions.hasConfiguredBruCliPath(configuredPath) && validationError == null) {
+            return true;
+        }
+
+        BrunoInstallationPathDialog dialog = new BrunoInstallationPathDialog(project, configuredPath);
+        if (!dialog.showAndGet()) {
+            return false;
+        }
+
+        settings.setBruCliPath(dialog.getInstallationPath());
+        return true;
     }
 }

@@ -59,7 +59,11 @@ public final class BrunoControllerExportService implements ControllerExportServi
             return ExportOutcome.failure("创建 Bruno 输出目录失败: " + exception.getMessage());
         }
 
-        String bruCliPath = resolveBruCliPath(settings);
+        Path bruCliPath = resolveBruCliPath(settings);
+        if (bruCliPath == null) {
+            String suffix = maybeKeepTemporaryFile(openApiFile, settings, true);
+            return ExportOutcome.failure("未找到 Bruno CLI，请先配置有效的 Bruno 安装路径。" + suffix);
+        }
         String collectionName = deriveCollectionName(openApiDocument.getControllerName());
 
         ProcessResult processResult;
@@ -107,14 +111,14 @@ public final class BrunoControllerExportService implements ControllerExportServi
         return BrunoExportOptions.resolveOutputDirectory(project.getBasePath(), settings.getCollectionOutputDirectory());
     }
 
-    private String resolveBruCliPath(BrunoHelperSettingsState settings) {
-        return BrunoExportOptions.resolveBruCliPath(project.getBasePath(), settings.getBruCliPath());
+    private Path resolveBruCliPath(BrunoHelperSettingsState settings) {
+        return BrunoExportOptions.resolveBruCliPath(settings.getBruCliPath());
     }
 
-    private ProcessResult runBruImport(String bruCliPath, Path openApiFile, Path outputDirectory, String collectionName)
+    private ProcessResult runBruImport(Path bruCliPath, Path openApiFile, Path outputDirectory, String collectionName)
             throws IOException, InterruptedException {
         List<String> command = new ArrayList<>();
-        command.add(bruCliPath);
+        command.add(bruCliPath.toString());
         command.add("import");
         command.add("openapi");
         command.add("--source");

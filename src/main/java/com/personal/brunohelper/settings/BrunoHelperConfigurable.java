@@ -1,6 +1,10 @@
 package com.personal.brunohelper.settings;
 
 import com.intellij.openapi.options.Configurable;
+import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
+import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import com.personal.brunohelper.service.BrunoExportOptions;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,7 +20,7 @@ import java.awt.Insets;
 public final class BrunoHelperConfigurable implements Configurable {
 
     private JPanel panel;
-    private JTextField bruCliPathField;
+    private TextFieldWithBrowseButton bruCliPathField;
     private JTextField outputDirectoryField;
     private JCheckBox keepTemporaryFileCheckBox;
 
@@ -29,7 +33,13 @@ public final class BrunoHelperConfigurable implements Configurable {
     public @Nullable JComponent createComponent() {
         if (panel == null) {
             panel = new JPanel(new GridBagLayout());
-            bruCliPathField = new JTextField();
+            bruCliPathField = new TextFieldWithBrowseButton();
+            bruCliPathField.addBrowseFolderListener(
+                    "选择 Bruno 安装目录",
+                    "请选择包含 bru 可执行文件的目录，也可以直接输入 Bruno 可执行文件的绝对路径。",
+                    null,
+                    FileChooserDescriptorFactory.createSingleFolderDescriptor()
+            );
             outputDirectoryField = new JTextField();
             keepTemporaryFileCheckBox = new JCheckBox("失败时保留临时 OpenAPI 文件");
 
@@ -40,17 +50,26 @@ public final class BrunoHelperConfigurable implements Configurable {
             constraints.fill = GridBagConstraints.NONE;
             constraints.insets = new Insets(0, 0, 8, 8);
             constraints.anchor = GridBagConstraints.WEST;
-            panel.add(new JLabel("Bru CLI 路径"), constraints);
+            panel.add(new JLabel("Bruno 安装路径"), constraints);
 
             constraints.gridx = 1;
             constraints.weightx = 1;
             constraints.fill = GridBagConstraints.HORIZONTAL;
+            constraints.insets = new Insets(0, 0, 8, 0);
             panel.add(bruCliPathField, constraints);
 
-            constraints.gridx = 0;
+            constraints.gridx = 1;
             constraints.gridy = 1;
+            constraints.weightx = 1;
+            constraints.fill = GridBagConstraints.HORIZONTAL;
+            constraints.insets = new Insets(0, 0, 8, 0);
+            panel.add(new JLabel("该配置为全局配置，对所有项目生效；请选择包含 bru 可执行文件的目录。"), constraints);
+
+            constraints.gridx = 0;
+            constraints.gridy = 2;
             constraints.weightx = 0;
             constraints.fill = GridBagConstraints.NONE;
+            constraints.insets = new Insets(0, 0, 8, 8);
             panel.add(new JLabel("Bruno Collection 输出目录"), constraints);
 
             constraints.gridx = 1;
@@ -59,14 +78,14 @@ public final class BrunoHelperConfigurable implements Configurable {
             panel.add(outputDirectoryField, constraints);
 
             constraints.gridx = 1;
-            constraints.gridy = 2;
+            constraints.gridy = 3;
             constraints.weightx = 1;
             constraints.fill = GridBagConstraints.HORIZONTAL;
             constraints.insets = new Insets(0, 0, 8, 0);
             panel.add(new JLabel("留空时默认使用当前项目根目录下的 bruno/"), constraints);
 
             constraints.gridx = 1;
-            constraints.gridy = 3;
+            constraints.gridy = 4;
             constraints.weightx = 1;
             constraints.fill = GridBagConstraints.HORIZONTAL;
             constraints.insets = new Insets(4, 0, 0, 0);
@@ -86,9 +105,14 @@ public final class BrunoHelperConfigurable implements Configurable {
     }
 
     @Override
-    public void apply() {
+    public void apply() throws ConfigurationException {
+        String bruCliPath = bruCliPathField.getText().trim();
+        String validationError = BrunoExportOptions.validateBruCliPath(bruCliPath, true);
+        if (validationError != null) {
+            throw new ConfigurationException(validationError);
+        }
         BrunoHelperSettingsState settings = BrunoHelperSettingsState.getInstance();
-        settings.setBruCliPath(bruCliPathField.getText());
+        settings.setBruCliPath(bruCliPath);
         settings.setCollectionOutputDirectory(outputDirectoryField.getText());
         settings.setKeepTemporaryOpenApiFile(keepTemporaryFileCheckBox.isSelected());
     }
