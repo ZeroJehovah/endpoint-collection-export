@@ -62,6 +62,13 @@ public final class BrunoHelperConfigurable implements Configurable {
             constraints.gridy = 2;
             constraints.weightx = 1;
             constraints.fill = GridBagConstraints.HORIZONTAL;
+            constraints.insets = new Insets(0, 0, 8, 0);
+            panel.add(new JLabel("留空时默认使用当前项目根目录下的 bruno/"), constraints);
+
+            constraints.gridx = 1;
+            constraints.gridy = 3;
+            constraints.weightx = 1;
+            constraints.fill = GridBagConstraints.HORIZONTAL;
             constraints.insets = new Insets(4, 0, 0, 0);
             panel.add(keepTemporaryFileCheckBox, constraints);
         }

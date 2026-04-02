@@ -12,7 +12,7 @@ import com.intellij.psi.SmartPsiElementPointer;
 import com.personal.brunohelper.context.ControllerContextResolver;
 import com.personal.brunohelper.model.ExportOutcome;
 import com.personal.brunohelper.notification.BrunoHelperNotifier;
-import com.personal.brunohelper.service.TemporaryOpenApiExportService;
+import com.personal.brunohelper.service.BrunoControllerExportService;
 import org.jetbrains.annotations.NotNull;
 
 public final class ExportControllerToBrunoAction extends AnAction {
@@ -35,7 +35,7 @@ public final class ExportControllerToBrunoAction extends AnAction {
         if (project == null || controllerClass == null) {
             return;
         }
-        TemporaryOpenApiExportService exportService = new TemporaryOpenApiExportService(project);
+        BrunoControllerExportService exportService = new BrunoControllerExportService(project);
         SmartPsiElementPointer<PsiClass> controllerPointer = exportService.createPointer(controllerClass);
 
         ProgressManager.getInstance().run(new Task.Backgroundable(project, "导出到 Bruno", false) {
