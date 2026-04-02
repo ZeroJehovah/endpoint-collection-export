@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -105,37 +104,11 @@ public final class BrunoControllerExportService implements ControllerExportServi
     }
 
     private Path resolveOutputDirectory(BrunoHelperSettingsState settings) {
-        String configuredDirectory = settings.getCollectionOutputDirectory();
-        if (configuredDirectory == null || configuredDirectory.isBlank()) {
-            String basePath = project.getBasePath();
-            if (basePath == null || basePath.isBlank()) {
-                return Paths.get("bruno");
-            }
-            return Paths.get(basePath, "bruno");
-        }
-        Path outputDirectory = Paths.get(configuredDirectory);
-        if (outputDirectory.isAbsolute()) {
-            return outputDirectory;
-        }
-        String basePath = project.getBasePath();
-        return basePath == null || basePath.isBlank()
-                ? outputDirectory
-                : Paths.get(basePath).resolve(outputDirectory).normalize();
+        return BrunoExportOptions.resolveOutputDirectory(project.getBasePath(), settings.getCollectionOutputDirectory());
     }
 
     private String resolveBruCliPath(BrunoHelperSettingsState settings) {
-        String configuredPath = settings.getBruCliPath();
-        if (configuredPath == null || configuredPath.isBlank() || "bru".equals(configuredPath)) {
-            return "bru";
-        }
-        Path cliPath = Paths.get(configuredPath);
-        if (cliPath.isAbsolute()) {
-            return cliPath.toString();
-        }
-        String basePath = project.getBasePath();
-        return basePath == null || basePath.isBlank()
-                ? cliPath.toString()
-                : Paths.get(basePath).resolve(cliPath).normalize().toString();
+        return BrunoExportOptions.resolveBruCliPath(project.getBasePath(), settings.getBruCliPath());
     }
 
     private ProcessResult runBruImport(String bruCliPath, Path openApiFile, Path outputDirectory, String collectionName)
@@ -166,10 +139,7 @@ public final class BrunoControllerExportService implements ControllerExportServi
     }
 
     private String deriveCollectionName(String controllerName) {
-        String normalized = controllerName.endsWith("Controller")
-                ? controllerName.substring(0, controllerName.length() - "Controller".length())
-                : controllerName;
-        return normalized.isBlank() ? "BrunoExport" : normalized;
+        return BrunoExportOptions.deriveCollectionName(controllerName);
     }
 
     private String maybeKeepTemporaryFile(Path openApiFile, BrunoHelperSettingsState settings, boolean failed) {
