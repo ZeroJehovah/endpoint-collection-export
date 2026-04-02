@@ -9,6 +9,7 @@
 1. 在 Spring Boot 项目的 `controller` 中，支持右键菜单操作：`导出到 Bruno`。
 2. 导出时，基于当前 `controller` 的注释、注解、入参类型、入参注解、出参类型，生成临时 OpenAPI 文档。
 3. 通过本机 Bruno CLI 将生成的临时 OpenAPI 文档导入 Bruno。
+4. 第一阶段仅需支持 Spring Boot 2 的原生自带 Web 注解，不额外兼容第三方扩展注解。
 
 后续当项目需求新增、变更或收敛时，必须同步更新本文件中的“项目简介”，确保 AGENTS.md 始终反映最新项目目标与范围。
 
@@ -20,6 +21,8 @@
 4. 每完成一个功能开发或一次功能迭代，必须自动执行一次 Git 提交。
 5. 只执行 Git 提交，不执行 Git 推送；提交完成后，必须输出可直接复制执行的 Git 推送命令。
 6. Git 提交信息必须遵循 Angular 提交信息规范。
+7. 第一阶段的解析与导出实现仅需覆盖 Spring Boot 2 原生自带注解，优先按常见 Spring MVC 模式实现。
+8. 如需参考业务项目的 `controller` 写法，可参考 `/opt/dev/projects/work/scm/middle_platform/sch-order-service`。
 
 ## Git 提交规则
 
