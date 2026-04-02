@@ -1,1 +1,4 @@
 /.codex
+/.gradle
+/build
+/out

@@ -1,0 +1,35 @@
+<idea-plugin>
+    <id>com.personal.brunohelper</id>
+    <name>Bruno Helper</name>
+    <vendor email="noreply@example.com">Personal</vendor>
+    <description><![CDATA[
+        Export Spring Boot controllers to Bruno via temporary OpenAPI documents.
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.java</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceImplementation="com.personal.brunohelper.settings.BrunoHelperSettingsState"/>
+        <notificationGroup
+                id="Bruno Helper"
+                displayType="BALLOON"
+                isLogByDefault="true"/>
+        <applicationConfigurable
+                id="com.personal.brunohelper.settings"
+                parentId="tools"
+                displayName="Bruno Helper"
+                instance="com.personal.brunohelper.settings.BrunoHelperConfigurable"/>
+    </extensions>
+
+    <actions>
+        <action
+                id="com.personal.brunohelper.action.ExportControllerToBrunoAction"
+                class="com.personal.brunohelper.action.ExportControllerToBrunoAction"
+                text="导出到 Bruno"
+                description="导出当前 Spring Controller 到 Bruno">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+        </action>
+    </actions>
+</idea-plugin>
