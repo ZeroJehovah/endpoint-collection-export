@@ -122,7 +122,7 @@ public final class BrunoControllerExportService implements ControllerExportServi
         command.add("import");
         command.add("openapi");
         command.add("--source");
-        command.add(openApiFile.toString());
+        command.add(resolveOpenApiSourceArgument(openApiFile));
         command.add("--output");
         command.add(outputDirectory.toString());
         command.add("--collection-name");
@@ -144,6 +144,12 @@ public final class BrunoControllerExportService implements ControllerExportServi
 
     private String deriveCollectionName(String controllerName) {
         return BrunoExportOptions.deriveCollectionName(controllerName);
+    }
+
+    private String resolveOpenApiSourceArgument(Path openApiFile) {
+        return BrunoExportOptions.isWindows()
+                ? openApiFile.toUri().toString()
+                : openApiFile.toString();
     }
 
     private String maybeKeepTemporaryFile(Path openApiFile, BrunoHelperSettingsState settings, boolean failed) {
