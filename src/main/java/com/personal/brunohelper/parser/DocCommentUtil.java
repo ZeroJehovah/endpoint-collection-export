@@ -5,6 +5,7 @@ import com.intellij.psi.javadoc.PsiDocComment;
 import com.intellij.psi.javadoc.PsiDocTag;
 import org.jetbrains.annotations.Nullable;
 
+import com.intellij.psi.PsiElement;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -19,7 +20,7 @@ public final class DocCommentUtil {
             return "";
         }
         StringBuilder builder = new StringBuilder();
-        for (var element : comment.getDescriptionElements()) {
+        for (PsiElement element : comment.getDescriptionElements()) {
             builder.append(element.getText());
         }
         return normalizeWhitespace(builder.toString());

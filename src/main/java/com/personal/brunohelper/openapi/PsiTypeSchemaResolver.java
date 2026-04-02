@@ -47,7 +47,7 @@ public final class PsiTypeSchemaResolver {
             "TableDataInfo"
     );
 
-    private final Map<String, Schema> componentSchemas = new LinkedHashMap<>();
+    private final Map<String, Schema<?>> componentSchemas = new LinkedHashMap<>();
     private final Map<String, String> componentNames = new LinkedHashMap<>();
     private final Set<String> inProgress = new LinkedHashSet<>();
 
@@ -170,7 +170,7 @@ public final class PsiTypeSchemaResolver {
             return null;
         }
         Components components = new Components();
-        for (Map.Entry<String, Schema> entry : componentSchemas.entrySet()) {
+        for (Map.Entry<String, Schema<?>> entry : componentSchemas.entrySet()) {
             components.addSchemas(entry.getKey(), entry.getValue());
         }
         return components;
