@@ -216,7 +216,7 @@ public final class BrunoExportOptions {
         }
     }
 
-    private static boolean isWindows() {
+    static boolean isWindows() {
         return System.getProperty("os.name", "").toLowerCase(Locale.ROOT).contains("win");
     }
 }
