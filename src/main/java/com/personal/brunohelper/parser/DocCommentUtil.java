@@ -1,8 +1,8 @@
 package com.personal.brunohelper.parser;
 
 import com.intellij.psi.PsiDocCommentOwner;
-import com.intellij.psi.PsiDocTag;
 import com.intellij.psi.javadoc.PsiDocComment;
+import com.intellij.psi.javadoc.PsiDocTag;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;

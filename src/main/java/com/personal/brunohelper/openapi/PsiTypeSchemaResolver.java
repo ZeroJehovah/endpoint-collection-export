@@ -47,7 +47,7 @@ public final class PsiTypeSchemaResolver {
             "TableDataInfo"
     );
 
-    private final Map<String, Schema<?>> componentSchemas = new LinkedHashMap<>();
+    private final Map<String, Schema> componentSchemas = new LinkedHashMap<>();
     private final Map<String, String> componentNames = new LinkedHashMap<>();
     private final Set<String> inProgress = new LinkedHashSet<>();
 
@@ -86,12 +86,16 @@ public final class PsiTypeSchemaResolver {
             return stringSchemaFor(type.getCanonicalText());
         }
         if (PsiTypeSupport.isCollectionType(type) && type instanceof PsiClassType classType) {
-            PsiType itemType = classType.getParameters().length > 0 ? classType.getParameters()[0] : PsiType.getJavaLangObject(classType.getManager(), classType.getResolveScope());
-            return new ArraySchema().items(resolveSchema(itemType));
+            if (classType.getParameters().length == 0) {
+                return new ArraySchema().items(new ObjectSchema());
+            }
+            return new ArraySchema().items(resolveSchema(classType.getParameters()[0]));
         }
         if (PsiTypeSupport.isMapType(type) && type instanceof PsiClassType classType) {
-            PsiType valueType = classType.getParameters().length > 1 ? classType.getParameters()[1] : PsiType.getJavaLangObject(classType.getManager(), classType.getResolveScope());
-            return new MapSchema().additionalProperties(resolveSchema(valueType));
+            if (classType.getParameters().length <= 1) {
+                return new MapSchema().additionalProperties(new ObjectSchema());
+            }
+            return new MapSchema().additionalProperties(resolveSchema(classType.getParameters()[1]));
         }
         if (!(type instanceof PsiClassType classType)) {
             return new ObjectSchema();
@@ -162,7 +166,14 @@ public final class PsiTypeSchemaResolver {
     }
 
     public Components buildComponents() {
-        return componentSchemas.isEmpty() ? null : new Components().schemas(componentSchemas);
+        if (componentSchemas.isEmpty()) {
+            return null;
+        }
+        Components components = new Components();
+        for (Map.Entry<String, Schema> entry : componentSchemas.entrySet()) {
+            components.addSchemas(entry.getKey(), entry.getValue());
+        }
+        return components;
     }
 
     private Schema<?> schemaReferenceForClassType(PsiClassType classType, PsiClass psiClass) {
