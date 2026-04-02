@@ -158,9 +158,9 @@ public final class BrunoExportOptions {
                 continue;
             }
             for (String executableName : executableNames) {
-                Path candidate = directory.resolve(executableName);
-                if (Files.isRegularFile(candidate)) {
-                    return candidate.toString();
+                String resolved = resolveRegularFileIgnoringCase(directory, executableName);
+                if (resolved != null) {
+                    return resolved;
                 }
             }
         }
@@ -173,7 +173,7 @@ public final class BrunoExportOptions {
             return List.of();
         }
         List<String> entries = new ArrayList<>();
-        for (String entry : pathEnv.split(java.io.File.pathSeparator)) {
+        for (String entry : pathEnv.split(";")) {
             if (!entry.isBlank()) {
                 entries.add(entry.trim());
             }
@@ -194,9 +194,27 @@ public final class BrunoExportOptions {
             if (!normalized.startsWith(".")) {
                 normalized = "." + normalized;
             }
-            extensions.add(normalized);
+            extensions.add(normalized.toLowerCase(Locale.ROOT));
         }
         return extensions.isEmpty() ? List.of(".exe", ".cmd", ".bat", ".com") : extensions;
+    }
+
+    private static @Nullable String resolveRegularFileIgnoringCase(Path directory, String fileName) {
+        Path candidate = directory.resolve(fileName);
+        if (Files.isRegularFile(candidate)) {
+            return candidate.toString();
+        }
+        try (var children = Files.list(directory)) {
+            String expectedName = fileName.toLowerCase(Locale.ROOT);
+            return children
+                    .filter(Files::isRegularFile)
+                    .filter(path -> path.getFileName().toString().toLowerCase(Locale.ROOT).equals(expectedName))
+                    .map(Path::toString)
+                    .findFirst()
+                    .orElse(null);
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 
     private static boolean isWindows() {
