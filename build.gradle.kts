@@ -18,6 +18,7 @@ dependencies {
     implementation("io.swagger.core.v3:swagger-core:2.2.43")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.10.2")
 
     intellijPlatform {
         create("IC", "2023.3.8")
