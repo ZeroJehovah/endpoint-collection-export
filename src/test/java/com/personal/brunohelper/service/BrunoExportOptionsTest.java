@@ -48,4 +48,18 @@ class BrunoExportOptionsTest {
         assertEquals("SaleOrder", BrunoExportOptions.deriveCollectionName("SaleOrderController"));
         assertEquals("HealthCheck", BrunoExportOptions.deriveCollectionName("HealthCheck"));
     }
+
+    @Test
+    void shouldResolveCmdFromWindowsPath(@TempDir Path tempDir) throws IOException {
+        Path npmBinDirectory = Files.createDirectories(tempDir.resolve("npm-bin"));
+        Path bruCommand = Files.createFile(npmBinDirectory.resolve("bru.cmd"));
+
+        String resolved = BrunoExportOptions.resolveCommandOnWindows(
+                "bru",
+                npmBinDirectory.toString(),
+                ".COM;.EXE;.BAT;.CMD"
+        );
+
+        assertEquals(bruCommand.toString(), resolved);
+    }
 }

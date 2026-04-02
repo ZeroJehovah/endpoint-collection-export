@@ -6,7 +6,9 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public final class BrunoExportOptions {
 
@@ -37,13 +39,13 @@ public final class BrunoExportOptions {
         }
         Path cliPath = parsePath(normalized);
         if (cliPath == null) {
-            return isCommandName(normalized) ? normalized : null;
+            return resolveCommandName(normalized);
         }
         if (Files.isDirectory(cliPath)) {
             Path executable = findExecutableInDirectory(cliPath);
             return executable == null ? null : executable.toString();
         }
-        return Files.isRegularFile(cliPath) ? cliPath.toString() : (isCommandName(normalized) ? normalized : null);
+        return Files.isRegularFile(cliPath) ? cliPath.toString() : resolveCommandName(normalized);
     }
 
     public static boolean hasConfiguredBruCliPath(@Nullable String configuredPath) {
@@ -121,5 +123,83 @@ public final class BrunoExportOptions {
         return !configuredPath.contains("/")
                 && !configuredPath.contains("\\")
                 && !configuredPath.contains(" ");
+    }
+
+    private static @Nullable String resolveCommandName(String configuredPath) {
+        if (!isCommandName(configuredPath)) {
+            return null;
+        }
+        if (!isWindows()) {
+            return configuredPath;
+        }
+
+        String resolved = resolveCommandOnWindows(configuredPath, System.getenv("PATH"), System.getenv("PATHEXT"));
+        return resolved == null ? configuredPath : resolved;
+    }
+
+    static @Nullable String resolveCommandOnWindows(String commandName, @Nullable String pathEnv, @Nullable String pathExtEnv) {
+        if (!isCommandName(commandName)) {
+            return null;
+        }
+
+        List<String> executableNames = new ArrayList<>();
+        executableNames.add(commandName);
+
+        String lowerCaseCommandName = commandName.toLowerCase(Locale.ROOT);
+        for (String extension : splitPathExtensions(pathExtEnv)) {
+            if (!lowerCaseCommandName.endsWith(extension.toLowerCase(Locale.ROOT))) {
+                executableNames.add(commandName + extension);
+            }
+        }
+
+        for (String pathEntry : splitPathEntries(pathEnv)) {
+            Path directory = parsePath(pathEntry);
+            if (directory == null) {
+                continue;
+            }
+            for (String executableName : executableNames) {
+                Path candidate = directory.resolve(executableName);
+                if (Files.isRegularFile(candidate)) {
+                    return candidate.toString();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private static List<String> splitPathEntries(@Nullable String pathEnv) {
+        if (pathEnv == null || pathEnv.isBlank()) {
+            return List.of();
+        }
+        List<String> entries = new ArrayList<>();
+        for (String entry : pathEnv.split(java.io.File.pathSeparator)) {
+            if (!entry.isBlank()) {
+                entries.add(entry.trim());
+            }
+        }
+        return entries;
+    }
+
+    private static List<String> splitPathExtensions(@Nullable String pathExtEnv) {
+        if (pathExtEnv == null || pathExtEnv.isBlank()) {
+            return List.of(".exe", ".cmd", ".bat", ".com");
+        }
+        List<String> extensions = new ArrayList<>();
+        for (String extension : pathExtEnv.split(";")) {
+            String normalized = extension.trim();
+            if (normalized.isEmpty()) {
+                continue;
+            }
+            if (!normalized.startsWith(".")) {
+                normalized = "." + normalized;
+            }
+            extensions.add(normalized);
+        }
+        return extensions.isEmpty() ? List.of(".exe", ".cmd", ".bat", ".com") : extensions;
+    }
+
+    private static boolean isWindows() {
+        return System.getProperty("os.name", "").toLowerCase(Locale.ROOT).contains("win");
     }
 }
