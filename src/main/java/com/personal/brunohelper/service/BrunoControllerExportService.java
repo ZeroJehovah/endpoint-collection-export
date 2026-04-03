@@ -43,8 +43,8 @@ public final class BrunoControllerExportService implements ControllerExportServi
         }
 
         BrunoHelperSettingsState settings = BrunoHelperSettingsState.getInstance();
-        Path projectDirectory;
-        Path controllerDirectory;
+        Path projectDirectory = null;
+        Path controllerDirectory = null;
         try {
             projectDirectory = resolveProjectDirectory(settings);
             controllerDirectory = BrunoExportOptions.resolveControllerDirectory(projectDirectory, exportModel.getControllerName());
@@ -52,7 +52,7 @@ public final class BrunoControllerExportService implements ControllerExportServi
         } catch (IOException exception) {
             return ExportOutcome.failure(
                     "创建 Bruno 输出目录失败: " + exception.getMessage(),
-                    emptyReport(controllerModel)
+                    emptyReport(controllerModel, projectDirectory, controllerDirectory)
             );
         }
 
@@ -78,7 +78,7 @@ public final class BrunoControllerExportService implements ControllerExportServi
         } catch (IOException exception) {
             return ExportOutcome.failure(
                     "生成 Bruno Collection 文件失败: " + exception.getMessage(),
-                    emptyReport(controllerModel)
+                    emptyReport(controllerModel, projectDirectory, controllerDirectory)
             );
         }
     }
@@ -118,19 +118,33 @@ public final class BrunoControllerExportService implements ControllerExportServi
         return new ExportReport(
                 project.getName(),
                 controllerModel.getControllerName(),
+                generationResult.projectDirectory(),
+                generationResult.controllerDirectory(),
                 controllerModel.getEndpoints().size(),
                 generationResult.endpointResults().size(),
                 generationResult.skippedRequestCount(),
                 generationResult.createdRequestCount(),
+                generationResult.failedRequestCount(),
                 generationResult.endpointResults()
         );
     }
 
     private ExportReport emptyReport(ControllerExportModel controllerModel) {
+        return emptyReport(controllerModel, null, null);
+    }
+
+    private ExportReport emptyReport(
+            ControllerExportModel controllerModel,
+            @Nullable Path projectDirectory,
+            @Nullable Path controllerDirectory
+    ) {
         return new ExportReport(
                 project.getName(),
                 controllerModel.getControllerName(),
+                projectDirectory,
+                controllerDirectory,
                 controllerModel.getEndpoints().size(),
+                0,
                 0,
                 0,
                 0,
