@@ -2,6 +2,7 @@ package com.personal.brunohelper.service;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -10,19 +11,30 @@ public final class BrunoExportOptions {
     private BrunoExportOptions() {
     }
 
-    public static Path resolveOutputDirectory(@Nullable String projectBasePath, @Nullable String configuredDirectory) {
+    public static @Nullable String validateBaseOutputDirectory(@Nullable String configuredDirectory, boolean allowBlank) {
         if (configuredDirectory == null || configuredDirectory.isBlank()) {
-            return projectBasePath == null || projectBasePath.isBlank()
-                    ? Paths.get("bruno")
-                    : Paths.get(projectBasePath, "bruno");
+            return allowBlank ? null : "请输入 Bruno 基础输出目录。";
         }
-        Path outputDirectory = Paths.get(configuredDirectory);
-        if (outputDirectory.isAbsolute()) {
-            return outputDirectory;
+        Path outputDirectory;
+        try {
+            outputDirectory = Paths.get(configuredDirectory.trim()).normalize();
+        } catch (InvalidPathException exception) {
+            return "Bruno 基础输出目录格式无效。";
         }
-        return projectBasePath == null || projectBasePath.isBlank()
-                ? outputDirectory
-                : Paths.get(projectBasePath).resolve(outputDirectory).normalize();
+        if (!outputDirectory.isAbsolute()) {
+            return "Bruno 基础输出目录必须使用绝对路径。";
+        }
+        return null;
+    }
+
+    public static Path resolveBaseOutputDirectory(String configuredDirectory) {
+        return Paths.get(configuredDirectory.trim()).normalize();
+    }
+
+    public static Path resolveCollectionDirectory(Path baseOutputDirectory, @Nullable String projectName, String controllerName) {
+        String safeProjectName = sanitizeFileSystemName(projectName == null || projectName.isBlank() ? "project" : projectName);
+        String safeControllerName = sanitizeFileSystemName(controllerName == null || controllerName.isBlank() ? "Controller" : controllerName);
+        return baseOutputDirectory.resolve(safeProjectName).resolve(safeControllerName);
     }
 
     public static String deriveCollectionName(String controllerName) {

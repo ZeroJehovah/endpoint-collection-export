@@ -49,13 +49,12 @@ public final class BrunoCollectionWriter {
             "HEAD", 7
     );
 
-    public GenerationResult writeCollection(ControllerExportModel model, Path outputDirectory) throws IOException {
-        return writePreparedCollection(prepareCollection(model, outputDirectory));
+    public GenerationResult writeCollection(ControllerExportModel model, Path collectionDirectory) throws IOException {
+        return writePreparedCollection(prepareCollection(model, collectionDirectory));
     }
 
-    public PreparedCollection prepareCollection(ControllerExportModel model, Path outputDirectory) {
+    public PreparedCollection prepareCollection(ControllerExportModel model, Path collectionDirectory) {
         String collectionName = BrunoExportOptions.deriveCollectionName(model.getControllerName());
-        Path collectionDirectory = outputDirectory.resolve(BrunoExportOptions.sanitizeFileSystemName(collectionName));
         return new PreparedCollection(
                 collectionName,
                 model.getControllerName(),

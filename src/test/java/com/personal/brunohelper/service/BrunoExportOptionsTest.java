@@ -5,14 +5,27 @@ import org.junit.jupiter.api.Test;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class BrunoExportOptionsTest {
 
     @Test
-    void shouldUseProjectDefaultOutputDirectoryWhenBlank() {
-        Path outputDirectory = BrunoExportOptions.resolveOutputDirectory("/workspace/demo", "");
+    void shouldValidateGlobalBaseOutputDirectory() {
+        assertEquals("请输入 Bruno 基础输出目录。", BrunoExportOptions.validateBaseOutputDirectory("", false));
+        assertEquals("Bruno 基础输出目录必须使用绝对路径。", BrunoExportOptions.validateBaseOutputDirectory("bruno/output", false));
+        assertNull(BrunoExportOptions.validateBaseOutputDirectory("/workspace/bruno-output", false));
+    }
 
-        assertEquals(Path.of("/workspace/demo/bruno"), outputDirectory);
+    @Test
+    void shouldResolveCollectionDirectoryByProjectAndController() {
+        assertEquals(
+                Path.of("/workspace/bruno-output/demo-project/OrderFileController"),
+                BrunoExportOptions.resolveCollectionDirectory(
+                        Path.of("/workspace/bruno-output"),
+                        "demo project",
+                        "OrderFileController"
+                )
+        );
     }
 
     @Test

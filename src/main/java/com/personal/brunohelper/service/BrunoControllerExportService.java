@@ -35,16 +35,16 @@ public final class BrunoControllerExportService implements ControllerExportServi
         }
 
         BrunoHelperSettingsState settings = BrunoHelperSettingsState.getInstance();
-        Path outputDirectory;
+        Path collectionDirectory;
         try {
-            outputDirectory = resolveOutputDirectory(settings);
-            Files.createDirectories(outputDirectory);
+            collectionDirectory = resolveCollectionDirectory(settings, exportModel.getControllerName());
+            Files.createDirectories(collectionDirectory.getParent());
         } catch (IOException exception) {
             return ExportOutcome.failure("创建 Bruno 输出目录失败: " + exception.getMessage());
         }
 
         BrunoCollectionWriter.PreparedCollection preparedCollection = ReadAction.compute(() ->
-                exportModel == null ? null : collectionWriter.prepareCollection(exportModel, outputDirectory)
+                exportModel == null ? null : collectionWriter.prepareCollection(exportModel, collectionDirectory)
         );
         if (preparedCollection == null) {
             return ExportOutcome.failure("当前 controller 已失效，无法继续导出。");
@@ -71,7 +71,8 @@ public final class BrunoControllerExportService implements ControllerExportServi
         return parser.parse(controllerClass);
     }
 
-    private Path resolveOutputDirectory(BrunoHelperSettingsState settings) {
-        return BrunoExportOptions.resolveOutputDirectory(project.getBasePath(), settings.getCollectionOutputDirectory());
+    private Path resolveCollectionDirectory(BrunoHelperSettingsState settings, String controllerName) {
+        Path baseOutputDirectory = BrunoExportOptions.resolveBaseOutputDirectory(settings.getCollectionOutputDirectory());
+        return BrunoExportOptions.resolveCollectionDirectory(baseOutputDirectory, project.getName(), controllerName);
     }
 }
