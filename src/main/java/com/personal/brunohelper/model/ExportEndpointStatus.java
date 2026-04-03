@@ -1,9 +1,9 @@
 package com.personal.brunohelper.model;
 
 public enum ExportEndpointStatus {
-    SUCCESS("成功"),
-    FAILED("失败"),
-    SKIPPED("跳过");
+    SUCCESS("SUCCESS"),
+    FAILED("FAILED"),
+    SKIPPED("SKIPPED");
 
     private final String displayName;
 
