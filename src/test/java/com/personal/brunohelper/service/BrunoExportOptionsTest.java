@@ -17,14 +17,18 @@ class BrunoExportOptionsTest {
     }
 
     @Test
-    void shouldResolveCollectionDirectoryByProjectAndController() {
+    void shouldResolveProjectAndControllerDirectories() {
+        Path projectDirectory = BrunoExportOptions.resolveProjectDirectory(
+                Path.of("/workspace/bruno-output"),
+                "demo project"
+        );
+        assertEquals(
+                Path.of("/workspace/bruno-output/demo-project"),
+                projectDirectory
+        );
         assertEquals(
                 Path.of("/workspace/bruno-output/demo-project/OrderFileController"),
-                BrunoExportOptions.resolveCollectionDirectory(
-                        Path.of("/workspace/bruno-output"),
-                        "demo project",
-                        "OrderFileController"
-                )
+                BrunoExportOptions.resolveControllerDirectory(projectDirectory, "OrderFileController")
         );
     }
 

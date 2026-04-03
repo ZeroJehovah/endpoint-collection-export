@@ -35,16 +35,18 @@ public final class BrunoControllerExportService implements ControllerExportServi
         }
 
         BrunoHelperSettingsState settings = BrunoHelperSettingsState.getInstance();
-        Path collectionDirectory;
+        Path projectDirectory;
+        Path controllerDirectory;
         try {
-            collectionDirectory = resolveCollectionDirectory(settings, exportModel.getControllerName());
-            Files.createDirectories(collectionDirectory.getParent());
+            projectDirectory = resolveProjectDirectory(settings);
+            controllerDirectory = BrunoExportOptions.resolveControllerDirectory(projectDirectory, exportModel.getControllerName());
+            Files.createDirectories(projectDirectory);
         } catch (IOException exception) {
             return ExportOutcome.failure("创建 Bruno 输出目录失败: " + exception.getMessage());
         }
 
         BrunoCollectionWriter.PreparedCollection preparedCollection = ReadAction.compute(() ->
-                exportModel == null ? null : collectionWriter.prepareCollection(exportModel, collectionDirectory)
+                exportModel == null ? null : collectionWriter.prepareCollection(exportModel, project.getName(), projectDirectory, controllerDirectory)
         );
         if (preparedCollection == null) {
             return ExportOutcome.failure("当前 controller 已失效，无法继续导出。");
@@ -52,8 +54,9 @@ public final class BrunoControllerExportService implements ControllerExportServi
 
         try {
             BrunoCollectionWriter.GenerationResult result = collectionWriter.writePreparedCollection(preparedCollection);
-            return ExportOutcome.success("已生成 Bruno Collection `" + result.collectionName()
-                    + "`，目录: " + result.collectionDirectory());
+            return ExportOutcome.success("已更新 Bruno 项目 `" + result.collectionName()
+                    + "`，项目目录: " + result.projectDirectory()
+                    + "，controller目录: " + result.controllerDirectory());
         } catch (IOException exception) {
             return ExportOutcome.failure("生成 Bruno Collection 文件失败: " + exception.getMessage());
         }
@@ -71,8 +74,8 @@ public final class BrunoControllerExportService implements ControllerExportServi
         return parser.parse(controllerClass);
     }
 
-    private Path resolveCollectionDirectory(BrunoHelperSettingsState settings, String controllerName) {
+    private Path resolveProjectDirectory(BrunoHelperSettingsState settings) {
         Path baseOutputDirectory = BrunoExportOptions.resolveBaseOutputDirectory(settings.getCollectionOutputDirectory());
-        return BrunoExportOptions.resolveCollectionDirectory(baseOutputDirectory, project.getName(), controllerName);
+        return BrunoExportOptions.resolveProjectDirectory(baseOutputDirectory, project.getName());
     }
 }

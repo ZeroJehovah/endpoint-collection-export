@@ -26,6 +26,8 @@ class BrunoCollectionWriterTest {
     @Test
     void shouldGenerateOpenCollectionFilesForGetEndpoint() throws IOException {
         BrunoCollectionWriter writer = new BrunoCollectionWriter();
+        Path projectDirectory = tempDir.resolve("demo-project");
+        Path controllerDirectory = projectDirectory.resolve("OrderFileController");
         ControllerExportModel model = new ControllerExportModel(
                 "OrderFileController",
                 "订单文件",
@@ -46,21 +48,22 @@ class BrunoCollectionWriterTest {
                 ))
         );
 
-        BrunoCollectionWriter.GenerationResult result = writer.writeCollection(model, tempDir);
+        BrunoCollectionWriter.GenerationResult result = writer.writeCollection(model, "demo project", projectDirectory, controllerDirectory);
 
-        assertEquals("OrderFile", result.collectionName());
-        assertTrue(Files.exists(result.collectionDirectory().resolve("opencollection.yml")));
-        assertTrue(Files.exists(result.collectionDirectory().resolve(".bruno-helper.yml")));
+        assertEquals("demo project", result.collectionName());
+        assertEquals(projectDirectory, result.projectDirectory());
+        assertEquals(controllerDirectory, result.controllerDirectory());
+        assertTrue(Files.exists(result.projectDirectory().resolve("opencollection.yml")));
+        assertTrue(Files.exists(result.controllerDirectory().resolve(".bruno-helper.yml")));
 
-        String collectionFile = Files.readString(result.collectionDirectory().resolve("opencollection.yml"));
+        String collectionFile = Files.readString(result.projectDirectory().resolve("opencollection.yml"));
         assertTrue(collectionFile.contains("opencollection: 1.0.0"));
-        assertTrue(collectionFile.contains("name: \"OrderFile\""));
+        assertTrue(collectionFile.contains("name: \"demo project\""));
 
         Path requestFile;
-        try (var files = Files.list(result.collectionDirectory())) {
+        try (var files = Files.list(result.controllerDirectory())) {
             requestFile = files
                     .filter(path -> path.getFileName().toString().endsWith(".yml"))
-                    .filter(path -> !path.getFileName().toString().equals("opencollection.yml"))
                     .filter(path -> !path.getFileName().toString().startsWith("."))
                     .findFirst()
                     .orElseThrow();
@@ -77,6 +80,8 @@ class BrunoCollectionWriterTest {
     @Test
     void shouldGenerateJsonBodyForRequestBodyEndpoint() throws IOException {
         BrunoCollectionWriter writer = new BrunoCollectionWriter();
+        Path projectDirectory = tempDir.resolve("demo-project");
+        Path controllerDirectory = projectDirectory.resolve("HealthController");
         ControllerExportModel model = new ControllerExportModel(
                 "HealthController",
                 "健康检查",
@@ -93,13 +98,12 @@ class BrunoCollectionWriterTest {
                 ))
         );
 
-        BrunoCollectionWriter.GenerationResult result = writer.writeCollection(model, tempDir);
+        BrunoCollectionWriter.GenerationResult result = writer.writeCollection(model, "demo project", projectDirectory, controllerDirectory);
 
         Path requestFile;
-        try (var files = Files.list(result.collectionDirectory())) {
+        try (var files = Files.list(result.controllerDirectory())) {
             requestFile = files
                     .filter(path -> path.getFileName().toString().endsWith(".yml"))
-                    .filter(path -> !path.getFileName().toString().equals("opencollection.yml"))
                     .filter(path -> !path.getFileName().toString().startsWith("."))
                     .findFirst()
                     .orElseThrow();
@@ -110,5 +114,37 @@ class BrunoCollectionWriterTest {
         assertTrue(requestContent.contains("name: \"Content-Type\""));
         assertTrue(requestContent.contains("value: \"application/json\""));
         assertTrue(requestContent.contains("0"));
+    }
+
+    @Test
+    void shouldKeepExistingProjectOpenCollectionFile() throws IOException {
+        BrunoCollectionWriter writer = new BrunoCollectionWriter();
+        Path projectDirectory = tempDir.resolve("demo-project");
+        Path controllerDirectory = projectDirectory.resolve("HealthController");
+        Files.createDirectories(projectDirectory);
+        Files.writeString(projectDirectory.resolve("opencollection.yml"), "existing-opencollection", java.nio.charset.StandardCharsets.UTF_8);
+
+        ControllerExportModel model = new ControllerExportModel(
+                "HealthController",
+                "健康检查",
+                "",
+                List.of(new EndpointExportModel(
+                        "HealthController.echo",
+                        "提交健康检查",
+                        "",
+                        List.of("/health/echo"),
+                        Set.of("POST"),
+                        List.of(),
+                        null,
+                        PsiType.VOID
+                ))
+        );
+
+        writer.writeCollection(model, "demo project", projectDirectory, controllerDirectory);
+
+        assertEquals(
+                "existing-opencollection",
+                Files.readString(projectDirectory.resolve("opencollection.yml"))
+        );
     }
 }

@@ -37,7 +37,6 @@ public final class BrunoCollectionWriter {
 
     private static final String COLLECTION_FILE = "opencollection.yml";
     private static final String MARKER_FILE = ".bruno-helper.yml";
-    private static final String GITIGNORE_FILE = ".gitignore";
     private static final Pattern PATH_VARIABLE_PATTERN = Pattern.compile("\\{([^}/]+)}");
     private static final Map<String, Integer> HTTP_METHOD_ORDER = Map.of(
             "GET", 1,
@@ -49,64 +48,68 @@ public final class BrunoCollectionWriter {
             "HEAD", 7
     );
 
-    public GenerationResult writeCollection(ControllerExportModel model, Path collectionDirectory) throws IOException {
-        return writePreparedCollection(prepareCollection(model, collectionDirectory));
+    public GenerationResult writeCollection(
+            ControllerExportModel model,
+            String projectName,
+            Path projectDirectory,
+            Path controllerDirectory
+    ) throws IOException {
+        return writePreparedCollection(prepareCollection(model, projectName, projectDirectory, controllerDirectory));
     }
 
-    public PreparedCollection prepareCollection(ControllerExportModel model, Path collectionDirectory) {
-        String collectionName = BrunoExportOptions.deriveCollectionName(model.getControllerName());
+    PreparedCollection prepareCollection(
+            ControllerExportModel model,
+            String projectName,
+            Path projectDirectory,
+            Path controllerDirectory
+    ) {
+        String collectionName = projectName == null || projectName.isBlank() ? "project" : projectName;
         return new PreparedCollection(
                 collectionName,
                 model.getControllerName(),
-                collectionDirectory,
+                projectDirectory,
+                controllerDirectory,
                 buildRequestFiles(model)
         );
     }
 
-    public GenerationResult writePreparedCollection(PreparedCollection preparedCollection) throws IOException {
-        prepareCollectionDirectory(preparedCollection.collectionDirectory());
-        Files.createDirectories(preparedCollection.collectionDirectory());
+    GenerationResult writePreparedCollection(PreparedCollection preparedCollection) throws IOException {
+        prepareControllerDirectory(preparedCollection.controllerDirectory());
+        Files.createDirectories(preparedCollection.projectDirectory());
+        Files.createDirectories(preparedCollection.controllerDirectory());
 
-        writeFile(preparedCollection.collectionDirectory().resolve(COLLECTION_FILE), renderCollectionFile(preparedCollection.collectionName()));
-        writeFile(preparedCollection.collectionDirectory().resolve(MARKER_FILE), renderMarkerFile(preparedCollection.controllerName()));
-        writeFile(preparedCollection.collectionDirectory().resolve(GITIGNORE_FILE), renderGitIgnoreFile());
+        writeProjectCollectionFileIfMissing(preparedCollection.projectDirectory(), preparedCollection.collectionName());
+        writeFile(preparedCollection.controllerDirectory().resolve(MARKER_FILE), renderMarkerFile(preparedCollection.controllerName()));
 
         int sequence = 1;
         for (RequestFile requestFile : preparedCollection.requestFiles()) {
             String fileName = String.format(Locale.ROOT, "%03d-%s.yml", sequence, requestFile.fileSlug());
-            writeFile(preparedCollection.collectionDirectory().resolve(fileName), renderRequestFile(requestFile, sequence));
+            writeFile(preparedCollection.controllerDirectory().resolve(fileName), renderRequestFile(requestFile, sequence));
             sequence++;
         }
 
-        return new GenerationResult(preparedCollection.collectionName(), preparedCollection.collectionDirectory(), sequence - 1);
+        return new GenerationResult(
+                preparedCollection.collectionName(),
+                preparedCollection.projectDirectory(),
+                preparedCollection.controllerDirectory(),
+                sequence - 1
+        );
     }
 
-    private void prepareCollectionDirectory(Path collectionDirectory) throws IOException {
-        if (!Files.exists(collectionDirectory)) {
+    private void prepareControllerDirectory(Path controllerDirectory) throws IOException {
+        if (!Files.exists(controllerDirectory)) {
             return;
         }
-        if (Files.exists(collectionDirectory.resolve(MARKER_FILE)) || looksLikeBrunoCollection(collectionDirectory)) {
-            deleteRecursively(collectionDirectory);
+        if (Files.exists(controllerDirectory.resolve(MARKER_FILE))) {
+            deleteRecursively(controllerDirectory);
             return;
         }
-        try (Stream<Path> children = Files.list(collectionDirectory)) {
+        try (Stream<Path> children = Files.list(controllerDirectory)) {
             if (children.findAny().isEmpty()) {
                 return;
             }
         }
-        throw new IOException("目标目录已存在且不是 Bruno Helper 生成的 Collection: " + collectionDirectory);
-    }
-
-    private boolean looksLikeBrunoCollection(Path collectionDirectory) throws IOException {
-        if (Files.exists(collectionDirectory.resolve(COLLECTION_FILE))) {
-            return true;
-        }
-        try (Stream<Path> children = Files.list(collectionDirectory)) {
-            return children.anyMatch(path -> {
-                String fileName = path.getFileName().toString();
-                return fileName.endsWith(".bru");
-            });
-        }
+        throw new IOException("controller 目录已存在且不是 Bruno Helper 生成的目录: " + controllerDirectory);
     }
 
     private void deleteRecursively(Path root) throws IOException {
@@ -407,6 +410,13 @@ public final class BrunoCollectionWriter {
         Files.writeString(path, content, StandardCharsets.UTF_8);
     }
 
+    private void writeProjectCollectionFileIfMissing(Path projectDirectory, String collectionName) throws IOException {
+        Path collectionFile = projectDirectory.resolve(COLLECTION_FILE);
+        if (!Files.exists(collectionFile)) {
+            writeFile(collectionFile, renderCollectionFile(collectionName));
+        }
+    }
+
     private String renderCollectionFile(String collectionName) {
         StringBuilder builder = new StringBuilder();
         builder.append("opencollection: 1.0.0\n\n");
@@ -423,10 +433,6 @@ public final class BrunoCollectionWriter {
 
     private String renderMarkerFile(String controllerName) {
         return "generatedBy: Bruno Helper\ncontroller: " + yamlString(controllerName) + "\n";
-    }
-
-    private String renderGitIgnoreFile() {
-        return "node_modules\n.git\n";
     }
 
     private String renderRequestFile(RequestFile requestFile, int sequence) {
@@ -507,13 +513,14 @@ public final class BrunoCollectionWriter {
                 .replace("\t", "\\t") + "\"";
     }
 
-    public record GenerationResult(String collectionName, Path collectionDirectory, int requestCount) {
+    public record GenerationResult(String collectionName, Path projectDirectory, Path controllerDirectory, int requestCount) {
     }
 
     record PreparedCollection(
             String collectionName,
             String controllerName,
-            Path collectionDirectory,
+            Path projectDirectory,
+            Path controllerDirectory,
             List<RequestFile> requestFiles
     ) {
     }

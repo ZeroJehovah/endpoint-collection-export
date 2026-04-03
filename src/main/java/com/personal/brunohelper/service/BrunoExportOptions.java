@@ -31,10 +31,14 @@ public final class BrunoExportOptions {
         return Paths.get(configuredDirectory.trim()).normalize();
     }
 
-    public static Path resolveCollectionDirectory(Path baseOutputDirectory, @Nullable String projectName, String controllerName) {
+    public static Path resolveProjectDirectory(Path baseOutputDirectory, @Nullable String projectName) {
         String safeProjectName = sanitizeFileSystemName(projectName == null || projectName.isBlank() ? "project" : projectName);
+        return baseOutputDirectory.resolve(safeProjectName);
+    }
+
+    public static Path resolveControllerDirectory(Path projectDirectory, String controllerName) {
         String safeControllerName = sanitizeFileSystemName(controllerName == null || controllerName.isBlank() ? "Controller" : controllerName);
-        return baseOutputDirectory.resolve(safeProjectName).resolve(safeControllerName);
+        return projectDirectory.resolve(safeControllerName);
     }
 
     public static String deriveCollectionName(String controllerName) {
