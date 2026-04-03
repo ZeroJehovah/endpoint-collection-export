@@ -31,12 +31,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 public final class BrunoCollectionWriter {
 
     private static final String COLLECTION_FILE = "opencollection.yml";
-    private static final String MARKER_FILE = ".bruno-helper.yml";
     private static final Pattern PATH_VARIABLE_PATTERN = Pattern.compile("\\{([^}/]+)}");
     private static final Map<String, Integer> HTTP_METHOD_ORDER = Map.of(
             "GET", 1,
@@ -74,17 +72,24 @@ public final class BrunoCollectionWriter {
     }
 
     GenerationResult writePreparedCollection(PreparedCollection preparedCollection) throws IOException {
-        prepareControllerDirectory(preparedCollection.controllerDirectory());
         Files.createDirectories(preparedCollection.projectDirectory());
         Files.createDirectories(preparedCollection.controllerDirectory());
 
         writeProjectCollectionFileIfMissing(preparedCollection.projectDirectory(), preparedCollection.collectionName());
-        writeFile(preparedCollection.controllerDirectory().resolve(MARKER_FILE), renderMarkerFile(preparedCollection.controllerName()));
 
         int sequence = 1;
+        int createdCount = 0;
+        int skippedCount = 0;
         for (RequestFile requestFile : preparedCollection.requestFiles()) {
-            String fileName = String.format(Locale.ROOT, "%03d-%s.yml", sequence, requestFile.fileSlug());
-            writeFile(preparedCollection.controllerDirectory().resolve(fileName), renderRequestFile(requestFile, sequence));
+            String fileName = requestFile.fileSlug() + ".yml";
+            Path requestFilePath = preparedCollection.controllerDirectory().resolve(fileName);
+            if (Files.exists(requestFilePath)) {
+                skippedCount++;
+                sequence++;
+                continue;
+            }
+            writeFile(requestFilePath, renderRequestFile(requestFile, sequence));
+            createdCount++;
             sequence++;
         }
 
@@ -92,32 +97,9 @@ public final class BrunoCollectionWriter {
                 preparedCollection.collectionName(),
                 preparedCollection.projectDirectory(),
                 preparedCollection.controllerDirectory(),
-                sequence - 1
+                createdCount,
+                skippedCount
         );
-    }
-
-    private void prepareControllerDirectory(Path controllerDirectory) throws IOException {
-        if (!Files.exists(controllerDirectory)) {
-            return;
-        }
-        if (Files.exists(controllerDirectory.resolve(MARKER_FILE))) {
-            deleteRecursively(controllerDirectory);
-            return;
-        }
-        try (Stream<Path> children = Files.list(controllerDirectory)) {
-            if (children.findAny().isEmpty()) {
-                return;
-            }
-        }
-        throw new IOException("controller 目录已存在且不是 Bruno Helper 生成的目录: " + controllerDirectory);
-    }
-
-    private void deleteRecursively(Path root) throws IOException {
-        try (Stream<Path> paths = Files.walk(root)) {
-            for (Path path : paths.sorted(Comparator.reverseOrder()).toList()) {
-                Files.deleteIfExists(path);
-            }
-        }
     }
 
     private List<RequestFile> buildRequestFiles(ControllerExportModel model) {
@@ -431,10 +413,6 @@ public final class BrunoCollectionWriter {
         return builder.toString();
     }
 
-    private String renderMarkerFile(String controllerName) {
-        return "generatedBy: Bruno Helper\ncontroller: " + yamlString(controllerName) + "\n";
-    }
-
     private String renderRequestFile(RequestFile requestFile, int sequence) {
         StringBuilder builder = new StringBuilder();
         builder.append("info:\n");
@@ -513,7 +491,13 @@ public final class BrunoCollectionWriter {
                 .replace("\t", "\\t") + "\"";
     }
 
-    public record GenerationResult(String collectionName, Path projectDirectory, Path controllerDirectory, int requestCount) {
+    public record GenerationResult(
+            String collectionName,
+            Path projectDirectory,
+            Path controllerDirectory,
+            int createdRequestCount,
+            int skippedRequestCount
+    ) {
     }
 
     record PreparedCollection(

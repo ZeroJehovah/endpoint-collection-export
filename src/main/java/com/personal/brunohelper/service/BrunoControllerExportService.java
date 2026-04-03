@@ -3,12 +3,14 @@ package com.personal.brunohelper.service;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiMethod;
 import com.intellij.psi.SmartPointerManager;
 import com.intellij.psi.SmartPsiElementPointer;
 import com.personal.brunohelper.model.ControllerExportModel;
 import com.personal.brunohelper.model.ExportOutcome;
 import com.personal.brunohelper.parser.SpringControllerParser;
 import com.personal.brunohelper.settings.BrunoHelperSettingsState;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,8 +27,11 @@ public final class BrunoControllerExportService implements ControllerExportServi
     }
 
     @Override
-    public ExportOutcome export(SmartPsiElementPointer<PsiClass> controllerPointer) {
-        ControllerExportModel exportModel = ReadAction.compute(() -> buildModel(controllerPointer));
+    public ExportOutcome export(
+            SmartPsiElementPointer<PsiClass> controllerPointer,
+            @Nullable SmartPsiElementPointer<PsiMethod> methodPointer
+    ) {
+        ControllerExportModel exportModel = ReadAction.compute(() -> buildModel(controllerPointer, methodPointer));
         if (exportModel == null) {
             return ExportOutcome.failure("当前 controller 已失效，无法继续导出。");
         }
@@ -56,7 +61,8 @@ public final class BrunoControllerExportService implements ControllerExportServi
             BrunoCollectionWriter.GenerationResult result = collectionWriter.writePreparedCollection(preparedCollection);
             return ExportOutcome.success("已更新 Bruno 项目 `" + result.collectionName()
                     + "`，项目目录: " + result.projectDirectory()
-                    + "，controller目录: " + result.controllerDirectory());
+                    + "，controller目录: " + result.controllerDirectory()
+                    + "，新增 " + result.createdRequestCount() + " 个接口文件，跳过 " + result.skippedRequestCount() + " 个已存在文件。");
         } catch (IOException exception) {
             return ExportOutcome.failure("生成 Bruno Collection 文件失败: " + exception.getMessage());
         }
@@ -66,12 +72,26 @@ public final class BrunoControllerExportService implements ControllerExportServi
         return SmartPointerManager.getInstance(project).createSmartPsiElementPointer(controllerClass);
     }
 
-    private ControllerExportModel buildModel(SmartPsiElementPointer<PsiClass> controllerPointer) {
+    public @Nullable SmartPsiElementPointer<PsiMethod> createPointer(@Nullable PsiMethod method) {
+        if (method == null) {
+            return null;
+        }
+        return SmartPointerManager.getInstance(project).createSmartPsiElementPointer(method);
+    }
+
+    private ControllerExportModel buildModel(
+            SmartPsiElementPointer<PsiClass> controllerPointer,
+            @Nullable SmartPsiElementPointer<PsiMethod> methodPointer
+    ) {
         PsiClass controllerClass = controllerPointer.getElement();
         if (controllerClass == null || !controllerClass.isValid()) {
             return null;
         }
-        return parser.parse(controllerClass);
+        PsiMethod method = methodPointer == null ? null : methodPointer.getElement();
+        if (methodPointer != null && (method == null || !method.isValid())) {
+            return null;
+        }
+        return parser.parse(controllerClass, method);
     }
 
     private Path resolveProjectDirectory(BrunoHelperSettingsState settings) {

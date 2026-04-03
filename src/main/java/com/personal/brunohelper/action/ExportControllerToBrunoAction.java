@@ -8,8 +8,10 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiMethod;
 import com.intellij.psi.SmartPsiElementPointer;
 import com.personal.brunohelper.context.ControllerContextResolver;
+import com.personal.brunohelper.context.ControllerContextResolver.ExportTarget;
 import com.personal.brunohelper.model.ExportOutcome;
 import com.personal.brunohelper.notification.BrunoHelperNotifier;
 import com.personal.brunohelper.service.BrunoControllerExportService;
@@ -27,15 +29,15 @@ public final class ExportControllerToBrunoAction extends AnAction {
 
     @Override
     public void update(@NotNull AnActionEvent event) {
-        PsiClass controllerClass = ControllerContextResolver.resolveController(event);
-        event.getPresentation().setEnabledAndVisible(controllerClass != null);
+        ExportTarget target = ControllerContextResolver.resolveTarget(event);
+        event.getPresentation().setEnabledAndVisible(target != null);
     }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
         Project project = event.getProject();
-        PsiClass controllerClass = ControllerContextResolver.resolveController(event);
-        if (project == null || controllerClass == null) {
+        ExportTarget target = ControllerContextResolver.resolveTarget(event);
+        if (project == null || target == null) {
             return;
         }
         if (!ensureOutputDirectoryConfigured(project)) {
@@ -43,12 +45,13 @@ public final class ExportControllerToBrunoAction extends AnAction {
             return;
         }
         BrunoControllerExportService exportService = new BrunoControllerExportService(project);
-        SmartPsiElementPointer<PsiClass> controllerPointer = exportService.createPointer(controllerClass);
+        SmartPsiElementPointer<PsiClass> controllerPointer = exportService.createPointer(target.controllerClass());
+        SmartPsiElementPointer<PsiMethod> methodPointer = exportService.createPointer(target.targetMethod());
 
         ProgressManager.getInstance().run(new Task.Backgroundable(project, "导出到 Bruno", false) {
             @Override
             public void run(@NotNull ProgressIndicator indicator) {
-                ExportOutcome outcome = exportService.export(controllerPointer);
+                ExportOutcome outcome = exportService.export(controllerPointer, methodPointer);
                 if (outcome.isSuccess()) {
                     BrunoHelperNotifier.info(project, outcome.getMessage());
                 } else {
