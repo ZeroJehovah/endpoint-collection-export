@@ -42,8 +42,16 @@ public final class BrunoControllerExportService implements ControllerExportServi
         } catch (IOException exception) {
             return ExportOutcome.failure("创建 Bruno 输出目录失败: " + exception.getMessage());
         }
+
+        BrunoCollectionWriter.PreparedCollection preparedCollection = ReadAction.compute(() ->
+                exportModel == null ? null : collectionWriter.prepareCollection(exportModel, outputDirectory)
+        );
+        if (preparedCollection == null) {
+            return ExportOutcome.failure("当前 controller 已失效，无法继续导出。");
+        }
+
         try {
-            BrunoCollectionWriter.GenerationResult result = collectionWriter.writeCollection(exportModel, outputDirectory);
+            BrunoCollectionWriter.GenerationResult result = collectionWriter.writePreparedCollection(preparedCollection);
             return ExportOutcome.success("已生成 Bruno Collection `" + result.collectionName()
                     + "`，目录: " + result.collectionDirectory());
         } catch (IOException exception) {
