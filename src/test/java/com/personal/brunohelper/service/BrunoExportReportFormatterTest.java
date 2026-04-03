@@ -5,6 +5,7 @@ import com.personal.brunohelper.model.ExportEndpointStatus;
 import com.personal.brunohelper.model.ExportReport;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Path;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -16,10 +17,13 @@ class BrunoExportReportFormatterTest {
         ExportReport report = new ExportReport(
                 "sch-order-service",
                 "OrderFileController",
+                Path.of("D:\\Documents\\bruno\\collections\\sch-order-service"),
+                Path.of("D:\\Documents\\bruno\\collections\\sch-order-service\\OrderFileController"),
                 5,
                 2,
                 1,
                 1,
+                0,
                 List.of(
                         new ExportEndpointResult("/order-files/:id", "getById", "查询订单文件", ExportEndpointStatus.SUCCESS, "GET-order-files-id.yml", null),
                         new ExportEndpointResult("/order-files/export", "export", "导出订单文件", ExportEndpointStatus.SKIPPED, "POST-order-files-export.yml", "exists")
@@ -34,6 +38,9 @@ class BrunoExportReportFormatterTest {
         assertTrue(content.contains("执行导出的接口数量: 2"));
         assertTrue(content.contains("跳过的接口数量: 1"));
         assertTrue(content.contains("实际成功导出的接口数量: 1"));
+        assertTrue(content.contains("失败的接口数量: 0"));
+        assertTrue(content.contains("项目目录: D:\\Documents\\bruno\\collections\\sch-order-service"));
+        assertTrue(content.contains("controller目录: D:\\Documents\\bruno\\collections\\sch-order-service\\OrderFileController"));
         assertTrue(content.contains("Bruno Export Result"));
         assertTrue(content.contains("| Relative URL"));
         assertTrue(content.contains("| /order-files/:id"));

@@ -9,6 +9,23 @@ import java.util.List;
 public final class BrunoExportReportFormatter {
 
     public String format(ExportReport report) {
+        return formatSummary(report) + formatDirectorySummary(report) + '\n' + formatTable(report);
+    }
+
+    public String formatSummary(ExportReport report) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Bruno Export Result").append('\n');
+        builder.append("服务名: ").append(report.serviceName()).append('\n');
+        builder.append("类名: ").append(report.className()).append('\n');
+        builder.append("类里的接口总数: ").append(report.controllerEndpointCount()).append('\n');
+        builder.append("执行导出的接口数量: ").append(report.exportedEndpointCount()).append('\n');
+        builder.append("跳过的接口数量: ").append(report.skippedEndpointCount()).append('\n');
+        builder.append("实际成功导出的接口数量: ").append(report.succeededEndpointCount()).append('\n');
+        builder.append("失败的接口数量: ").append(report.failedEndpointCount()).append('\n');
+        return builder.toString();
+    }
+
+    public String formatTable(ExportReport report) {
         List<Row> rows = new ArrayList<>();
         rows.add(new Row("Relative URL", "Method Name", "Export Result", "Endpoint Name"));
         for (ExportEndpointResult endpointResult : report.endpointResults()) {
@@ -26,15 +43,6 @@ public final class BrunoExportReportFormatter {
         int nameWidth = columnWidth(rows, Row::endpointName);
 
         StringBuilder builder = new StringBuilder();
-        builder.append("Bruno Export Result").append('\n');
-        builder.append("服务名: ").append(report.serviceName()).append('\n');
-        builder.append("类名: ").append(report.className()).append('\n');
-        builder.append("类里的接口总数: ").append(report.controllerEndpointCount()).append('\n');
-        builder.append("执行导出的接口数量: ").append(report.exportedEndpointCount()).append('\n');
-        builder.append("跳过的接口数量: ").append(report.skippedEndpointCount()).append('\n');
-        builder.append("实际成功导出的接口数量: ").append(report.succeededEndpointCount()).append('\n');
-        builder.append('\n');
-
         String border = "+"
                 + repeat('-', urlWidth + 2) + "+"
                 + repeat('-', methodWidth + 2) + "+"
@@ -53,6 +61,17 @@ public final class BrunoExportReportFormatter {
             }
         }
         builder.append(border).append('\n');
+        return builder.toString();
+    }
+
+    private String formatDirectorySummary(ExportReport report) {
+        StringBuilder builder = new StringBuilder();
+        if (report.projectDirectory() != null) {
+            builder.append("项目目录: ").append(report.projectDirectory()).append('\n');
+        }
+        if (report.controllerDirectory() != null) {
+            builder.append("controller目录: ").append(report.controllerDirectory()).append('\n');
+        }
         return builder.toString();
     }
 
