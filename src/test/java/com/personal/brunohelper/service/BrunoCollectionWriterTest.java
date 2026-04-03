@@ -1,0 +1,114 @@
+package com.personal.brunohelper.service;
+
+import com.intellij.psi.PsiType;
+import com.personal.brunohelper.model.ControllerExportModel;
+import com.personal.brunohelper.model.EndpointExportModel;
+import com.personal.brunohelper.model.EndpointParameterModel;
+import com.personal.brunohelper.model.ParameterSource;
+import com.personal.brunohelper.model.RequestBodyModel;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class BrunoCollectionWriterTest {
+
+    @TempDir
+    Path tempDir;
+
+    @Test
+    void shouldGenerateOpenCollectionFilesForGetEndpoint() throws IOException {
+        BrunoCollectionWriter writer = new BrunoCollectionWriter();
+        ControllerExportModel model = new ControllerExportModel(
+                "OrderFileController",
+                "订单文件",
+                "导出订单文件接口",
+                List.of(new EndpointExportModel(
+                        "OrderFileController.getById",
+                        "查询订单文件",
+                        "根据订单文件ID查询详情",
+                        List.of("/order-files/{id}"),
+                        Set.of("GET"),
+                        List.of(
+                                new EndpointParameterModel("id", "", true, null, ParameterSource.PATH_VARIABLE, PsiType.INT),
+                                new EndpointParameterModel("page", "", false, "1", ParameterSource.REQUEST_PARAM, PsiType.INT),
+                                new EndpointParameterModel("X-Trace-Id", "", false, null, ParameterSource.REQUEST_HEADER, PsiType.INT)
+                        ),
+                        null,
+                        PsiType.VOID
+                ))
+        );
+
+        BrunoCollectionWriter.GenerationResult result = writer.writeCollection(model, tempDir);
+
+        assertEquals("OrderFile", result.collectionName());
+        assertTrue(Files.exists(result.collectionDirectory().resolve("opencollection.yml")));
+        assertTrue(Files.exists(result.collectionDirectory().resolve(".bruno-helper.yml")));
+
+        String collectionFile = Files.readString(result.collectionDirectory().resolve("opencollection.yml"));
+        assertTrue(collectionFile.contains("opencollection: 1.0.0"));
+        assertTrue(collectionFile.contains("name: \"OrderFile\""));
+
+        Path requestFile;
+        try (var files = Files.list(result.collectionDirectory())) {
+            requestFile = files
+                    .filter(path -> path.getFileName().toString().endsWith(".yml"))
+                    .filter(path -> !path.getFileName().toString().equals("opencollection.yml"))
+                    .filter(path -> !path.getFileName().toString().startsWith("."))
+                    .findFirst()
+                    .orElseThrow();
+        }
+        String requestContent = Files.readString(requestFile);
+        assertTrue(requestContent.contains("url: \"{{baseUrl}}/order-files/:id\""));
+        assertTrue(requestContent.contains("type: \"path\""));
+        assertTrue(requestContent.contains("name: \"page\""));
+        assertTrue(requestContent.contains("value: \"1\""));
+        assertTrue(requestContent.contains("name: \"X-Trace-Id\""));
+        assertTrue(requestContent.contains("docs: |-"));
+    }
+
+    @Test
+    void shouldGenerateJsonBodyForRequestBodyEndpoint() throws IOException {
+        BrunoCollectionWriter writer = new BrunoCollectionWriter();
+        ControllerExportModel model = new ControllerExportModel(
+                "HealthController",
+                "健康检查",
+                "",
+                List.of(new EndpointExportModel(
+                        "HealthController.echo",
+                        "提交健康检查",
+                        "",
+                        List.of("/health/echo"),
+                        Set.of("POST"),
+                        List.of(),
+                        new RequestBodyModel(PsiType.INT, true, "", "application/json"),
+                        PsiType.VOID
+                ))
+        );
+
+        BrunoCollectionWriter.GenerationResult result = writer.writeCollection(model, tempDir);
+
+        Path requestFile;
+        try (var files = Files.list(result.collectionDirectory())) {
+            requestFile = files
+                    .filter(path -> path.getFileName().toString().endsWith(".yml"))
+                    .filter(path -> !path.getFileName().toString().equals("opencollection.yml"))
+                    .filter(path -> !path.getFileName().toString().startsWith("."))
+                    .findFirst()
+                    .orElseThrow();
+        }
+        String requestContent = Files.readString(requestFile);
+        assertTrue(requestContent.contains("method: POST"));
+        assertTrue(requestContent.contains("type: \"json\""));
+        assertTrue(requestContent.contains("name: \"Content-Type\""));
+        assertTrue(requestContent.contains("value: \"application/json\""));
+        assertTrue(requestContent.contains("0"));
+    }
+}

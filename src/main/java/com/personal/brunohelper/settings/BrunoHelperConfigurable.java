@@ -4,7 +4,6 @@ import com.intellij.openapi.options.Configurable;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -17,7 +16,6 @@ public final class BrunoHelperConfigurable implements Configurable {
 
     private JPanel panel;
     private JTextField outputDirectoryField;
-    private JCheckBox keepTemporaryFileCheckBox;
 
     @Override
     public @Nls String getDisplayName() {
@@ -29,7 +27,6 @@ public final class BrunoHelperConfigurable implements Configurable {
         if (panel == null) {
             panel = new JPanel(new GridBagLayout());
             outputDirectoryField = new JTextField();
-            keepTemporaryFileCheckBox = new JCheckBox("失败时保留临时 OpenAPI 文件");
 
             GridBagConstraints constraints = new GridBagConstraints();
             constraints.gridx = 0;
@@ -49,15 +46,8 @@ public final class BrunoHelperConfigurable implements Configurable {
             constraints.gridy = 1;
             constraints.weightx = 1;
             constraints.fill = GridBagConstraints.HORIZONTAL;
-            constraints.insets = new Insets(0, 0, 8, 0);
-            panel.add(new JLabel("留空时默认使用当前项目根目录下的 bruno/"), constraints);
-
-            constraints.gridx = 1;
-            constraints.gridy = 2;
-            constraints.weightx = 1;
-            constraints.fill = GridBagConstraints.HORIZONTAL;
-            constraints.insets = new Insets(4, 0, 0, 0);
-            panel.add(keepTemporaryFileCheckBox, constraints);
+            constraints.insets = new Insets(0, 0, 0, 0);
+            panel.add(new JLabel("留空时默认使用当前项目根目录下的 bruno/，导出时会在该目录下生成 Collection 文件夹。"), constraints);
         }
 
         reset();
@@ -67,15 +57,13 @@ public final class BrunoHelperConfigurable implements Configurable {
     @Override
     public boolean isModified() {
         BrunoHelperSettingsState settings = BrunoHelperSettingsState.getInstance();
-        return !outputDirectoryField.getText().trim().equals(settings.getCollectionOutputDirectory())
-                || keepTemporaryFileCheckBox.isSelected() != settings.isKeepTemporaryOpenApiFile();
+        return !outputDirectoryField.getText().trim().equals(settings.getCollectionOutputDirectory());
     }
 
     @Override
     public void apply() {
         BrunoHelperSettingsState settings = BrunoHelperSettingsState.getInstance();
         settings.setCollectionOutputDirectory(outputDirectoryField.getText());
-        settings.setKeepTemporaryOpenApiFile(keepTemporaryFileCheckBox.isSelected());
     }
 
     @Override
@@ -84,15 +72,11 @@ public final class BrunoHelperConfigurable implements Configurable {
         if (outputDirectoryField != null) {
             outputDirectoryField.setText(settings.getCollectionOutputDirectory());
         }
-        if (keepTemporaryFileCheckBox != null) {
-            keepTemporaryFileCheckBox.setSelected(settings.isKeepTemporaryOpenApiFile());
-        }
     }
 
     @Override
     public void disposeUIResources() {
         panel = null;
         outputDirectoryField = null;
-        keepTemporaryFileCheckBox = null;
     }
 }

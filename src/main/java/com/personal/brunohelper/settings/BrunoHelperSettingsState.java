@@ -37,16 +37,7 @@ public final class BrunoHelperSettingsState implements PersistentStateComponent<
         state.collectionOutputDirectory = collectionOutputDirectory == null ? "" : collectionOutputDirectory.trim();
     }
 
-    public boolean isKeepTemporaryOpenApiFile() {
-        return state.keepTemporaryOpenApiFile;
-    }
-
-    public void setKeepTemporaryOpenApiFile(boolean keepTemporaryOpenApiFile) {
-        state.keepTemporaryOpenApiFile = keepTemporaryOpenApiFile;
-    }
-
     public static final class State {
         public String collectionOutputDirectory = "";
-        public boolean keepTemporaryOpenApiFile = false;
     }
 }
