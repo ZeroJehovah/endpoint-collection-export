@@ -50,24 +50,36 @@ public final class BrunoCollectionWriter {
     );
 
     public GenerationResult writeCollection(ControllerExportModel model, Path outputDirectory) throws IOException {
+        return writePreparedCollection(prepareCollection(model, outputDirectory));
+    }
+
+    public PreparedCollection prepareCollection(ControllerExportModel model, Path outputDirectory) {
         String collectionName = BrunoExportOptions.deriveCollectionName(model.getControllerName());
         Path collectionDirectory = outputDirectory.resolve(BrunoExportOptions.sanitizeFileSystemName(collectionName));
+        return new PreparedCollection(
+                collectionName,
+                model.getControllerName(),
+                collectionDirectory,
+                buildRequestFiles(model)
+        );
+    }
 
-        prepareCollectionDirectory(collectionDirectory);
-        Files.createDirectories(collectionDirectory);
+    public GenerationResult writePreparedCollection(PreparedCollection preparedCollection) throws IOException {
+        prepareCollectionDirectory(preparedCollection.collectionDirectory());
+        Files.createDirectories(preparedCollection.collectionDirectory());
 
-        writeFile(collectionDirectory.resolve(COLLECTION_FILE), renderCollectionFile(collectionName));
-        writeFile(collectionDirectory.resolve(MARKER_FILE), renderMarkerFile(model.getControllerName()));
-        writeFile(collectionDirectory.resolve(GITIGNORE_FILE), renderGitIgnoreFile());
+        writeFile(preparedCollection.collectionDirectory().resolve(COLLECTION_FILE), renderCollectionFile(preparedCollection.collectionName()));
+        writeFile(preparedCollection.collectionDirectory().resolve(MARKER_FILE), renderMarkerFile(preparedCollection.controllerName()));
+        writeFile(preparedCollection.collectionDirectory().resolve(GITIGNORE_FILE), renderGitIgnoreFile());
 
         int sequence = 1;
-        for (RequestFile requestFile : buildRequestFiles(model)) {
+        for (RequestFile requestFile : preparedCollection.requestFiles()) {
             String fileName = String.format(Locale.ROOT, "%03d-%s.yml", sequence, requestFile.fileSlug());
-            writeFile(collectionDirectory.resolve(fileName), renderRequestFile(requestFile, sequence));
+            writeFile(preparedCollection.collectionDirectory().resolve(fileName), renderRequestFile(requestFile, sequence));
             sequence++;
         }
 
-        return new GenerationResult(collectionName, collectionDirectory, sequence - 1);
+        return new GenerationResult(preparedCollection.collectionName(), preparedCollection.collectionDirectory(), sequence - 1);
     }
 
     private void prepareCollectionDirectory(Path collectionDirectory) throws IOException {
@@ -497,6 +509,14 @@ public final class BrunoCollectionWriter {
     }
 
     public record GenerationResult(String collectionName, Path collectionDirectory, int requestCount) {
+    }
+
+    record PreparedCollection(
+            String collectionName,
+            String controllerName,
+            Path collectionDirectory,
+            List<RequestFile> requestFiles
+    ) {
     }
 
     private record RequestFile(
