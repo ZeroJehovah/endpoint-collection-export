@@ -38,12 +38,19 @@ public final class SpringControllerParser {
     private static final String DEFAULT_NONE = "\n\t\t\n\t\t\n\ue000\ue001\ue002\n\t\t\t\t\n";
 
     public ControllerExportModel parse(PsiClass controllerClass) {
+        return parse(controllerClass, null);
+    }
+
+    public ControllerExportModel parse(PsiClass controllerClass, @Nullable PsiMethod targetMethod) {
         String description = resolveDescription(controllerClass, null);
         String summary = DocCommentUtil.firstSentence(description);
         List<String> classPaths = resolveClassPaths(controllerClass);
         List<EndpointExportModel> endpoints = new ArrayList<>();
 
         for (PsiMethod method : controllerClass.getMethods()) {
+            if (targetMethod != null && !method.equals(targetMethod)) {
+                continue;
+            }
             if (!method.hasModifierProperty(PsiModifier.PUBLIC) || method.isConstructor()) {
                 continue;
             }
