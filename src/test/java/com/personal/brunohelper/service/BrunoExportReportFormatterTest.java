@@ -34,10 +34,11 @@ class BrunoExportReportFormatterTest {
         assertTrue(content.contains("执行导出的接口数量: 2"));
         assertTrue(content.contains("跳过的接口数量: 1"));
         assertTrue(content.contains("实际成功导出的接口数量: 1"));
-        assertTrue(content.contains("| 相对URL"));
+        assertTrue(content.contains("Bruno Export Result"));
+        assertTrue(content.contains("| Relative URL"));
         assertTrue(content.contains("| /order-files/:id"));
         assertTrue(content.contains("查询订单文件"));
-        assertTrue(content.contains("成功"));
-        assertTrue(content.contains("跳过"));
+        assertTrue(content.contains("SUCCESS"));
+        assertTrue(content.contains("SKIPPED"));
     }
 }

@@ -10,25 +10,25 @@ public final class BrunoExportReportFormatter {
 
     public String format(ExportReport report) {
         List<Row> rows = new ArrayList<>();
-        rows.add(new Row("相对URL", "方法名", "接口名称", "导出结果", "yml文件名"));
+        rows.add(new Row("Relative URL", "Method Name", "Export Result", "YAML File", "Endpoint Name"));
         for (ExportEndpointResult endpointResult : report.endpointResults()) {
             rows.add(new Row(
                     endpointResult.relativeUrl(),
                     endpointResult.methodName(),
-                    endpointResult.endpointName(),
                     endpointResult.status().getDisplayName(),
-                    endpointResult.yamlFileName()
+                    endpointResult.yamlFileName(),
+                    endpointResult.endpointName()
             ));
         }
 
         int urlWidth = columnWidth(rows, Row::relativeUrl);
         int methodWidth = columnWidth(rows, Row::methodName);
-        int nameWidth = columnWidth(rows, Row::endpointName);
         int statusWidth = columnWidth(rows, Row::status);
         int fileWidth = columnWidth(rows, Row::yamlFileName);
+        int nameWidth = columnWidth(rows, Row::endpointName);
 
         StringBuilder builder = new StringBuilder();
-        builder.append("Bruno 导出结果").append('\n');
+        builder.append("Bruno Export Result").append('\n');
         builder.append("服务名: ").append(report.serviceName()).append('\n');
         builder.append("类名: ").append(report.className()).append('\n');
         builder.append("类里的接口总数: ").append(report.controllerEndpointCount()).append('\n');
@@ -40,17 +40,17 @@ public final class BrunoExportReportFormatter {
         String border = "+"
                 + repeat('-', urlWidth + 2) + "+"
                 + repeat('-', methodWidth + 2) + "+"
-                + repeat('-', nameWidth + 2) + "+"
                 + repeat('-', statusWidth + 2) + "+"
-                + repeat('-', fileWidth + 2) + "+";
+                + repeat('-', fileWidth + 2) + "+"
+                + repeat('-', nameWidth + 2) + "+";
         builder.append(border).append('\n');
         for (int index = 0; index < rows.size(); index++) {
             Row row = rows.get(index);
             builder.append("| ").append(padRight(row.relativeUrl(), urlWidth))
                     .append(" | ").append(padRight(row.methodName(), methodWidth))
-                    .append(" | ").append(padRight(row.endpointName(), nameWidth))
                     .append(" | ").append(padRight(row.status(), statusWidth))
                     .append(" | ").append(padRight(row.yamlFileName(), fileWidth))
+                    .append(" | ").append(padRight(row.endpointName(), nameWidth))
                     .append(" |").append('\n');
             if (index == 0) {
                 builder.append(border).append('\n');
@@ -93,9 +93,9 @@ public final class BrunoExportReportFormatter {
     private record Row(
             String relativeUrl,
             String methodName,
-            String endpointName,
             String status,
-            String yamlFileName
+            String yamlFileName,
+            String endpointName
     ) {
     }
 }
