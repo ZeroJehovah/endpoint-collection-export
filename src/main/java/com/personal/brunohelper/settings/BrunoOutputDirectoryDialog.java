@@ -21,10 +21,10 @@ public final class BrunoOutputDirectoryDialog extends DialogWrapper {
 
     public BrunoOutputDirectoryDialog(@Nullable Project project, @Nullable String initialValue) {
         super(project);
-        setTitle("配置 Bruno 基础输出目录");
+        setTitle("配置接口集合基础输出目录");
         outputDirectoryField.setText(initialValue == null ? "" : initialValue.trim());
         outputDirectoryField.addBrowseFolderListener(
-                "选择 Bruno 基础输出目录",
+                "选择接口集合基础输出目录",
                 "该配置为全局配置，对所有项目生效。",
                 project,
                 FileChooserDescriptorFactory.createSingleFolderDescriptor()
@@ -42,7 +42,7 @@ public final class BrunoOutputDirectoryDialog extends DialogWrapper {
         constraints.anchor = GridBagConstraints.WEST;
         constraints.fill = GridBagConstraints.NONE;
         constraints.insets = new Insets(0, 0, 8, 8);
-        panel.add(new JLabel("Bruno 基础输出目录"), constraints);
+        panel.add(new JLabel("接口集合基础输出目录"), constraints);
 
         constraints.gridx = 1;
         constraints.weightx = 1;

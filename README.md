@@ -1,10 +1,10 @@
-# Bruno Helper
+# Endpoint Collection Export
 
-> 声明：`Bruno Helper` 是一个非 Bruno 官方的 IntelliJ IDEA 插件，与 Bruno 官方团队无隶属关系，也不是 Bruno 官方发布产品。
+> 声明：`Endpoint Collection Export` 是一个第三方 IntelliJ IDEA 插件，可生成与 Bruno 兼容的 OpenCollection YAML 文件；与 Bruno 官方团队无隶属关系，也不是 Bruno 官方发布产品。
 
-`Bruno Helper` 是一个 IntelliJ IDEA 插件，用于把 Java Spring Boot Controller 直接导出为 Bruno 原生 Collection 文件，方便在 Bruno 中查看、调试和管理接口。
+`Endpoint Collection Export` 是一个 IntelliJ IDEA 插件，用于把 Java Spring Boot Controller 直接导出为 API collection 文件，并生成与 Bruno 兼容的 OpenCollection YAML 结构。
 
-当前实现不依赖 Bruno CLI，导出结果直接写入 Bruno 推荐的 OpenCollection YAML 结构。
+当前实现不依赖 Bruno CLI，导出结果直接写入 OpenCollection YAML 结构。
 
 ## 许可说明
 
@@ -18,11 +18,11 @@
 
 ## 功能特性
 
-- 在 Spring Boot `controller` 上提供右键菜单：`导出到 Bruno`
+- 在 Spring Boot `controller` 上提供右键菜单：`导出接口集合`
 - 支持在方法名上右键，只导出当前单个接口
 - 支持导出当前 controller 下的全部接口
 - 支持导出当前 controller 继承基类中已实现的 Spring 接口
-- 基于注释、请求映射、入参注解、入参类型、返回类型生成 Bruno 请求文件
+- 基于注释、请求映射、入参注解、入参类型、返回类型生成 OpenCollection 请求文件
 - 自动生成或维护：
   - 项目级 `opencollection.yml`
   - controller 级 `folder.yml`
@@ -41,9 +41,9 @@
 ## 使用方式
 
 1. 在 IDEA 中安装插件
-2. 打开 `Settings` -> `Tools` -> `Bruno Helper`
-3. 配置 Bruno 基础输出目录
-4. 在 Spring Boot Controller 类名上右键，选择 `导出到 Bruno`
+2. 打开 `Settings` -> `Tools` -> `Endpoint Collection Export`
+3. 配置接口集合基础输出目录
+4. 在 Spring Boot Controller 类名上右键，选择 `导出接口集合`
 5. 或在某个方法名上右键，只导出当前方法对应接口
 
 如果基础输出目录未配置，导出时会先弹出对话框要求输入或选择目录。
@@ -53,13 +53,13 @@
 假设基础输出目录配置为：
 
 ```text
-/path/to/bruno-workspace
+/path/to/collection-workspace
 ```
 
 导出 `example-service` 项目中的 `OrderController` 后，结果大致如下：
 
 ```text
-/path/to/bruno-workspace/
+/path/to/collection-workspace/
 ├── workspace.yml
 └── example-service/
     ├── opencollection.yml
@@ -101,9 +101,9 @@ build/distributions/
 
 ## 项目说明
 
-- 本项目为非 Bruno 官方插件
-- 插件 ID：`com.personal.brunohelper`
-- 插件名称：`Bruno Helper`
+- 本项目与 Bruno 官方无隶属关系
+- 插件 ID：`io.github.zerojehovah.endpointcollectionexport`
+- 插件名称：`Endpoint Collection Export`
 - 当前版本：`1.0.0`
 
 如果后续需要扩展支持更多 Spring 注解或更复杂的继承/接口声明场景，可以继续在解析器和导出规则上迭代。

@@ -1,1 +1,1 @@
-rootProject.name = "bruno-helper"
+rootProject.name = "endpoint-collection-export"

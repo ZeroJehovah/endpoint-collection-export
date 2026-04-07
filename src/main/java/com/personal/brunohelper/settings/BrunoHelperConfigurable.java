@@ -22,7 +22,7 @@ public final class BrunoHelperConfigurable implements Configurable {
 
     @Override
     public @Nls String getDisplayName() {
-        return "Bruno Helper";
+        return "Endpoint Collection Export";
     }
 
     @Override
@@ -31,7 +31,7 @@ public final class BrunoHelperConfigurable implements Configurable {
             panel = new JPanel(new GridBagLayout());
             outputDirectoryField = new TextFieldWithBrowseButton();
             outputDirectoryField.addBrowseFolderListener(
-                    "选择 Bruno 基础输出目录",
+                    "选择接口集合基础输出目录",
                     "该配置为全局配置，对所有项目生效。",
                     null,
                     FileChooserDescriptorFactory.createSingleFolderDescriptor()
@@ -44,7 +44,7 @@ public final class BrunoHelperConfigurable implements Configurable {
             constraints.fill = GridBagConstraints.NONE;
             constraints.insets = new Insets(0, 0, 8, 8);
             constraints.anchor = GridBagConstraints.WEST;
-            panel.add(new JLabel("Bruno 基础输出目录"), constraints);
+            panel.add(new JLabel("接口集合基础输出目录"), constraints);
 
             constraints.gridx = 1;
             constraints.weightx = 1;

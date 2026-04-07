@@ -13,16 +13,16 @@ public final class BrunoExportOptions {
 
     public static @Nullable String validateBaseOutputDirectory(@Nullable String configuredDirectory, boolean allowBlank) {
         if (configuredDirectory == null || configuredDirectory.isBlank()) {
-            return allowBlank ? null : "请输入 Bruno 基础输出目录。";
+            return allowBlank ? null : "请输入接口集合基础输出目录。";
         }
         Path outputDirectory;
         try {
             outputDirectory = Paths.get(configuredDirectory.trim()).normalize();
         } catch (InvalidPathException exception) {
-            return "Bruno 基础输出目录格式无效。";
+            return "接口集合基础输出目录格式无效。";
         }
         if (!outputDirectory.isAbsolute()) {
-            return "Bruno 基础输出目录必须使用绝对路径。";
+            return "接口集合基础输出目录必须使用绝对路径。";
         }
         return null;
     }
@@ -53,7 +53,7 @@ public final class BrunoExportOptions {
         String normalized = controllerName.endsWith("Controller")
                 ? controllerName.substring(0, controllerName.length() - "Controller".length())
                 : controllerName;
-        return normalized.isBlank() ? "BrunoExport" : normalized;
+        return normalized.isBlank() ? "CollectionExport" : normalized;
     }
 
     public static String sanitizeFileSystemName(String value) {
@@ -62,6 +62,6 @@ public final class BrunoExportOptions {
         normalized = normalized.replaceAll("\\s+", "-");
         normalized = normalized.replaceAll("-{2,}", "-");
         normalized = normalized.replaceAll("^-|-$", "");
-        return normalized.isBlank() ? "bruno-export" : normalized;
+        return normalized.isBlank() ? "collection-export" : normalized;
     }
 }

@@ -3,7 +3,7 @@ plugins {
     id("org.jetbrains.intellij.platform") version "2.13.1"
 }
 
-group = "com.personal.brunohelper"
+group = "io.github.zerojehovah.endpointcollectionexport"
 version = "1.0.0"
 
 repositories {
@@ -35,7 +35,8 @@ intellijPlatform {
         changeNotes = """
             <p>Initial public release.</p>
             <ul>
-                <li>Export Spring Boot 2 controllers or single endpoints to Bruno-compatible OpenCollection YAML files.</li>
+                <li>Export Spring Boot 2 controllers or single endpoints as API collection files.</li>
+                <li>Generate Bruno-compatible OpenCollection YAML for downstream API workflows.</li>
                 <li>Generate and reuse <code>workspace.yml</code>, <code>opencollection.yml</code>, and <code>folder.yml</code>.</li>
                 <li>Include endpoints declared in inherited base controllers during controller export.</li>
                 <li>Show export summaries and endpoint details in the IDE Run tool window.</li>

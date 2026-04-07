@@ -17,8 +17,8 @@ class BrunoExportReportFormatterTest {
         ExportReport report = new ExportReport(
                 "sch-order-service",
                 "OrderFileController",
-                Path.of("D:\\Documents\\bruno\\collections\\sch-order-service"),
-                Path.of("D:\\Documents\\bruno\\collections\\sch-order-service\\OrderFileController"),
+                Path.of("D:\\Documents\\collections\\sch-order-service"),
+                Path.of("D:\\Documents\\collections\\sch-order-service\\OrderFileController"),
                 5,
                 2,
                 1,
@@ -39,9 +39,9 @@ class BrunoExportReportFormatterTest {
         assertTrue(content.contains("跳过的接口数量: 1"));
         assertTrue(content.contains("实际成功导出的接口数量: 1"));
         assertTrue(content.contains("失败的接口数量: 0"));
-        assertTrue(content.contains("项目目录: D:\\Documents\\bruno\\collections\\sch-order-service"));
-        assertTrue(content.contains("controller目录: D:\\Documents\\bruno\\collections\\sch-order-service\\OrderFileController"));
-        assertTrue(content.contains("Bruno Export Result"));
+        assertTrue(content.contains("项目目录: D:\\Documents\\collections\\sch-order-service"));
+        assertTrue(content.contains("controller目录: D:\\Documents\\collections\\sch-order-service\\OrderFileController"));
+        assertTrue(content.contains("Collection Export Result"));
         assertTrue(content.contains("Relative URL"));
         assertTrue(content.contains("Method Name"));
         assertTrue(content.contains("Export Result"));

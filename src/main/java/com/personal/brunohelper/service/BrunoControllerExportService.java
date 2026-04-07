@@ -53,7 +53,7 @@ public final class BrunoControllerExportService implements ControllerExportServi
             Files.createDirectories(projectDirectory);
         } catch (IOException exception) {
             return ExportOutcome.failure(
-                    "创建 Bruno 输出目录失败: " + exception.getMessage(),
+                    "创建接口集合输出目录失败: " + exception.getMessage(),
                     emptyReport(controllerModel, projectDirectory, controllerDirectory)
             );
         }
@@ -77,7 +77,7 @@ public final class BrunoControllerExportService implements ControllerExportServi
         try {
             BrunoCollectionWriter.GenerationResult result = collectionWriter.writePreparedCollection(preparedCollection);
             ExportReport report = buildReport(controllerModel, result);
-            String message = "已更新 Bruno 项目 `" + result.collectionName()
+            String message = "已更新接口集合项目 `" + result.collectionName()
                     + "`，项目目录: " + result.projectDirectory()
                     + "，controller目录: " + result.controllerDirectory()
                     + "，新增 " + result.createdRequestCount() + " 个接口文件，跳过 " + result.skippedRequestCount()
@@ -88,7 +88,7 @@ public final class BrunoControllerExportService implements ControllerExportServi
             return ExportOutcome.success(message, report);
         } catch (IOException exception) {
             return ExportOutcome.failure(
-                    "生成 Bruno Collection 文件失败: " + exception.getMessage(),
+                    "生成接口集合文件失败: " + exception.getMessage(),
                     emptyReport(controllerModel, finalProjectDirectory, finalControllerDirectory)
             );
         }

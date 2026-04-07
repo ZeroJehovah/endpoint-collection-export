@@ -7,7 +7,7 @@ import com.intellij.openapi.components.Storage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@State(name = "BrunoHelperSettings", storages = @Storage("bruno-helper.xml"))
+@State(name = "EndpointCollectionExportSettings", storages = @Storage("endpoint-collection-export.xml"))
 public final class BrunoHelperSettingsState implements PersistentStateComponent<BrunoHelperSettingsState.State> {
 
     private State state = new State();

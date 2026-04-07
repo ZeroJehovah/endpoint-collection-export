@@ -14,7 +14,7 @@ public final class BrunoExportReportFormatter {
 
     public String formatSummary(ExportReport report) {
         StringBuilder builder = new StringBuilder();
-        builder.append("Bruno Export Result").append('\n');
+        builder.append("Collection Export Result").append('\n');
         builder.append("服务名: ").append(report.serviceName()).append('\n');
         builder.append("类名: ").append(report.className()).append('\n');
         builder.append("类里的接口总数: ").append(report.controllerEndpointCount()).append('\n');

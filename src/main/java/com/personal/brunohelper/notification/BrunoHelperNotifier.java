@@ -6,7 +6,7 @@ import com.intellij.openapi.project.Project;
 
 public final class BrunoHelperNotifier {
 
-    public static final String GROUP_ID = "Bruno Helper";
+    public static final String GROUP_ID = "Endpoint Collection Export";
 
     private BrunoHelperNotifier() {
     }

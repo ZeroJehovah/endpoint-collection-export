@@ -1,9 +1,11 @@
 <idea-plugin url="https://github.com/ZeroJehovah/Bruno-Helper">
-    <id>com.personal.brunohelper</id>
-    <name>Bruno Helper</name>
+    <id>io.github.zerojehovah.endpointcollectionexport</id>
+    <name>Endpoint Collection Export</name>
     <vendor url="https://github.com/ZeroJehovah" email="icerovah@gmail.com">ZeroJehovah</vendor>
     <description><![CDATA[
-        Exports Spring Boot controllers to Bruno-compatible OpenCollection YAML files.
+        Exports Spring Boot controllers as API collection files.
+        <br/><br/>
+        Generates Bruno-compatible OpenCollection YAML for API workflows.
         <br/><br/>
         <ul>
             <li>Export a whole controller or a single endpoint from the context menu.</li>
@@ -20,22 +22,22 @@
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="com.personal.brunohelper.settings.BrunoHelperSettingsState"/>
         <notificationGroup
-                id="Bruno Helper"
+                id="Endpoint Collection Export"
                 displayType="BALLOON"
                 isLogByDefault="true"/>
         <applicationConfigurable
-                id="com.personal.brunohelper.settings"
+                id="io.github.zerojehovah.endpointcollectionexport.settings"
                 parentId="tools"
-                displayName="Bruno Helper"
+                displayName="Endpoint Collection Export"
                 instance="com.personal.brunohelper.settings.BrunoHelperConfigurable"/>
     </extensions>
 
     <actions>
         <action
-                id="com.personal.brunohelper.action.ExportControllerToBrunoAction"
+                id="io.github.zerojehovah.endpointcollectionexport.action.ExportControllerAction"
                 class="com.personal.brunohelper.action.ExportControllerToBrunoAction"
-                text="导出到 Bruno"
-                description="导出当前 Spring Controller 到 Bruno">
+                text="导出接口集合"
+                description="导出当前 Spring Controller 为 OpenCollection 接口集合">
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
         </action>

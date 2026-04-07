@@ -11,28 +11,28 @@ class BrunoExportOptionsTest {
 
     @Test
     void shouldValidateGlobalBaseOutputDirectory() {
-        assertEquals("请输入 Bruno 基础输出目录。", BrunoExportOptions.validateBaseOutputDirectory("", false));
-        assertEquals("Bruno 基础输出目录必须使用绝对路径。", BrunoExportOptions.validateBaseOutputDirectory("bruno/output", false));
-        assertNull(BrunoExportOptions.validateBaseOutputDirectory("/workspace/bruno-output", false));
+        assertEquals("请输入接口集合基础输出目录。", BrunoExportOptions.validateBaseOutputDirectory("", false));
+        assertEquals("接口集合基础输出目录必须使用绝对路径。", BrunoExportOptions.validateBaseOutputDirectory("collection/output", false));
+        assertNull(BrunoExportOptions.validateBaseOutputDirectory("/workspace/collection-output", false));
     }
 
     @Test
     void shouldResolveProjectAndControllerDirectories() {
         Path projectDirectory = BrunoExportOptions.resolveProjectDirectory(
-                Path.of("/workspace/bruno-output"),
+                Path.of("/workspace/collection-output"),
                 "demo project"
         );
         assertEquals(
-                Path.of("/workspace/bruno-output/demo-project"),
+                Path.of("/workspace/collection-output/demo-project"),
                 projectDirectory
         );
         assertEquals(
-                Path.of("/workspace/bruno-output/demo-project/OrderFileController"),
+                Path.of("/workspace/collection-output/demo-project/OrderFileController"),
                 BrunoExportOptions.resolveControllerDirectory(projectDirectory, "OrderFileController")
         );
         assertEquals(
                 Path.of("/workspace/workspace.yml"),
-                BrunoExportOptions.resolveWorkspaceFile(Path.of("/workspace/bruno-output"))
+                BrunoExportOptions.resolveWorkspaceFile(Path.of("/workspace/collection-output"))
         );
     }
 
@@ -48,7 +48,7 @@ class BrunoExportOptionsTest {
                 "Sale-Order-Export",
                 BrunoExportOptions.sanitizeFileSystemName(" Sale / Order : Export ")
         );
-        assertEquals("bruno-export", BrunoExportOptions.sanitizeFileSystemName("   "));
+        assertEquals("collection-export", BrunoExportOptions.sanitizeFileSystemName("   "));
         assertEquals("user-list", BrunoExportOptions.sanitizeFileSystemName("user   list"));
     }
 }

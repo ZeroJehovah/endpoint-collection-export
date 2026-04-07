@@ -43,14 +43,14 @@ public final class ExportControllerToBrunoAction extends AnAction {
             return;
         }
         if (!ensureOutputDirectoryConfigured(project)) {
-            BrunoHelperNotifier.warn(project, "已取消导出，未完成 Bruno 输出目录配置。");
+            BrunoHelperNotifier.warn(project, "已取消导出，未完成接口集合输出目录配置。");
             return;
         }
         BrunoControllerExportService exportService = new BrunoControllerExportService(project);
         SmartPsiElementPointer<PsiClass> controllerPointer = exportService.createPointer(target.controllerClass());
         SmartPsiElementPointer<PsiMethod> methodPointer = exportService.createPointer(target.targetMethod());
 
-        ProgressManager.getInstance().run(new Task.Backgroundable(project, "导出到 Bruno", false) {
+        ProgressManager.getInstance().run(new Task.Backgroundable(project, "导出接口集合", false) {
             @Override
             public void run(@NotNull ProgressIndicator indicator) {
                 ExportOutcome outcome = exportService.export(controllerPointer, methodPointer);

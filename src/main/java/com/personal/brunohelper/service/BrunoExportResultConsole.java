@@ -37,7 +37,7 @@ public final class BrunoExportResultConsole {
                 consoleView,
                 null,
                 consoleView.getComponent(),
-                "Bruno 导出结果 - " + report.className(),
+                "Collection Export Result - " + report.className(),
                 null,
                 null,
                 consoleView.createConsoleActions()
