@@ -1,7 +1,7 @@
-<idea-plugin>
+<idea-plugin url="https://github.com/ZeroJehovah/Bruno-Helper">
     <id>com.personal.brunohelper</id>
     <name>Bruno Helper</name>
-    <vendor email="noreply@example.com">Personal</vendor>
+    <vendor url="https://github.com/ZeroJehovah" email="icerovah@gmail.com">ZeroJehovah</vendor>
     <description><![CDATA[
         Export Spring Boot controllers to native Bruno collection files.
     ]]></description>
