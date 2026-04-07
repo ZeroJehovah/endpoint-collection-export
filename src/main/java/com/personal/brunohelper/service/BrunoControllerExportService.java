@@ -56,8 +56,10 @@ public final class BrunoControllerExportService implements ControllerExportServi
             );
         }
 
+        Path finalProjectDirectory = projectDirectory;
+        Path finalControllerDirectory = controllerDirectory;
         BrunoCollectionWriter.PreparedCollection preparedCollection = ReadAction.compute(() ->
-                collectionWriter.prepareCollection(exportModel, project.getName(), projectDirectory, controllerDirectory)
+                collectionWriter.prepareCollection(exportModel, project.getName(), finalProjectDirectory, finalControllerDirectory)
         );
         if (preparedCollection == null) {
             return ExportOutcome.failure("当前 controller 已失效，无法继续导出。", emptyReport(controllerModel));
@@ -78,7 +80,7 @@ public final class BrunoControllerExportService implements ControllerExportServi
         } catch (IOException exception) {
             return ExportOutcome.failure(
                     "生成 Bruno Collection 文件失败: " + exception.getMessage(),
-                    emptyReport(controllerModel, projectDirectory, controllerDirectory)
+                    emptyReport(controllerModel, finalProjectDirectory, finalControllerDirectory)
             );
         }
     }
