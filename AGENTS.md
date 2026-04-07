@@ -19,6 +19,7 @@
 11. 若接口注释存在多行，则接口名称仅取注释第一行，且需移除其中的 HTML 标签；该规则同时适用于生成的 yml 文件内容中的接口名称以及运行窗口导出结果中的接口名称。
 12. controller 目录下的 `folder.yml` 由插件显式生成或更新，其 `info.name` 字段值应使用 controller 注释摘要；若 controller 注释为空，则回退为 controller 名称。
 13. 当导出产生新的项目级 Bruno Collection 时，插件需同步维护 workspace 根目录下的 `workspace.yml`，确保当前 collection 被加入 `collections` 列表；若对应 collection 已存在，则不重复添加。
+14. 导出 controller 时，除当前 controller 本类声明的 Spring 接口外，还需包含其继承基类中已实现的 Spring 接口；右键方法名导出时仍仅导出当前所选方法对应的单个接口。
 
 后续当项目需求新增、变更或收敛时，必须同步更新本文件中的“项目简介”，确保 AGENTS.md 始终反映最新项目目标与范围。
 
