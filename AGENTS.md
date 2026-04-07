@@ -6,7 +6,7 @@
 
 当前已确认的核心功能如下：
 
-1. 在 Spring Boot 项目的 `controller` 中，支持右键菜单操作：`导出接口集合`。
+1. 在 Spring Boot 项目的 `controller` 中，支持右键菜单操作：`导出到 Bruno`。
 2. 导出时，基于当前 `controller` 的注释、注解、入参类型、入参注解、出参类型，直接生成 OpenCollection Collection 文件。
 3. 生成结果优先采用 OpenCollection YAML 格式，直接写入用户指定目录，不再依赖 Bruno CLI。
 4. 第一阶段仅需支持 Spring Boot 2 的原生自带 Web 注解，不额外兼容第三方扩展注解。
@@ -37,7 +37,7 @@
 9. 输出给用户的 `build`、`buildPlugin` 等构建/打包命令可默认省略 `cd`，按仓库根目录执行来表达。
 10. 已确认当前代理执行环境无法自行完成 Gradle 构建验证；后续无需再次尝试本地构建，也无需重复向用户解释该限制，只需基于用户提供的真实构建结果继续处理问题。
 11. 涉及许可、README、发布说明等对外文档时，需明确本项目采用 `Apache License 2.0` 开源许可，并保持相关说明一致。
-12. 对外命名、插件名称、界面主文案应避免直接使用 `Bruno` 品牌词；README、Marketplace 描述等兼容性说明中可保留 `Bruno-compatible` 表述，以兼顾搜索与品牌风险控制。
+12. 对外命名、插件名称、Marketplace 主文案及设置页主标题应避免直接使用 `Bruno` 品牌词；右键导出动作文案可保留 `导出到 Bruno`；README、Marketplace 描述等兼容性说明中可保留 `Bruno-compatible` 表述，以兼顾搜索与品牌风险控制。
 13. `AGENTS.md` 只保留当前有效约束与最终结论，不记录约束变更过程或历史说明。
 
 ## Git 提交规则
