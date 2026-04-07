@@ -52,11 +52,11 @@ public final class BrunoExportReportFormatter {
                     .append('\n');
             if (index == 0) {
                 builder.append(repeat('-', urlWidth))
-                        .append("-+-")
+                        .append(" | ")
                         .append(repeat('-', methodWidth))
-                        .append("-+-")
+                        .append(" | ")
                         .append(repeat('-', statusWidth))
-                        .append("-+-")
+                        .append(" | ")
                         .append(repeat('-', nameWidth))
                         .append('\n');
             }
