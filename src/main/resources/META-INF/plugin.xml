@@ -1,4 +1,4 @@
-<idea-plugin url="https://github.com/ZeroJehovah/Bruno-Helper">
+<idea-plugin url="https://github.com/ZeroJehovah/endpoint-collection-export">
     <id>io.github.zerojehovah.endpointcollectionexport</id>
     <name>Endpoint Collection Export</name>
     <vendor url="https://github.com/ZeroJehovah" email="icerovah@gmail.com">ZeroJehovah</vendor>
@@ -13,7 +13,7 @@
             <li>Reuse existing project, controller, and endpoint files instead of overwriting them.</li>
             <li>Include Spring endpoints declared in inherited base controllers.</li>
         </ul>
-        Source code: <a href="https://github.com/ZeroJehovah/Bruno-Helper">GitHub</a>
+        Source code: <a href="https://github.com/ZeroJehovah/endpoint-collection-export">GitHub</a>
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
