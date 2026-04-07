@@ -2,6 +2,7 @@ package com.personal.brunohelper.parser;
 
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.HierarchicalMethodSignature;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiModifier;
 import com.intellij.psi.PsiParameter;
@@ -47,7 +48,7 @@ public final class SpringControllerParser {
         List<String> classPaths = resolveClassPaths(controllerClass);
         List<EndpointExportModel> endpoints = new ArrayList<>();
 
-        for (PsiMethod method : controllerClass.getMethods()) {
+        for (PsiMethod method : resolveCandidateMethods(controllerClass, targetMethod)) {
             if (targetMethod != null && !method.equals(targetMethod)) {
                 continue;
             }
@@ -66,6 +67,17 @@ public final class SpringControllerParser {
                 description,
                 endpoints
         );
+    }
+
+    private List<PsiMethod> resolveCandidateMethods(PsiClass controllerClass, @Nullable PsiMethod targetMethod) {
+        if (targetMethod != null) {
+            return List.of(targetMethod);
+        }
+        List<PsiMethod> methods = new ArrayList<>();
+        for (HierarchicalMethodSignature signature : controllerClass.getVisibleSignatures()) {
+            methods.add(signature.getMethod());
+        }
+        return methods;
     }
 
     private @Nullable EndpointExportModel parseEndpoint(PsiClass controllerClass, List<String> classPaths, PsiMethod method) {
