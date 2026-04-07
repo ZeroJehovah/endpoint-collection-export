@@ -1,6 +1,6 @@
 package com.personal.brunohelper.service;
 
-import com.intellij.openapi.application.ReadAction;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
@@ -32,7 +32,9 @@ public final class BrunoControllerExportService implements ControllerExportServi
             SmartPsiElementPointer<PsiClass> controllerPointer,
             @Nullable SmartPsiElementPointer<PsiMethod> methodPointer
     ) {
-        ParsedControllerModels parsedModels = ReadAction.compute(() -> buildModels(controllerPointer, methodPointer));
+        ParsedControllerModels parsedModels = DumbService.getInstance(project).runReadActionInSmartMode(
+                () -> buildModels(controllerPointer, methodPointer)
+        );
         if (parsedModels == null) {
             return ExportOutcome.failure("当前 controller 已失效，无法继续导出。");
         }
@@ -61,8 +63,8 @@ public final class BrunoControllerExportService implements ControllerExportServi
         Path finalProjectDirectory = projectDirectory;
         Path finalControllerDirectory = controllerDirectory;
         Path finalWorkspaceFile = workspaceFile;
-        BrunoCollectionWriter.PreparedCollection preparedCollection = ReadAction.compute(() ->
-                collectionWriter.prepareCollection(
+        BrunoCollectionWriter.PreparedCollection preparedCollection = DumbService.getInstance(project).runReadActionInSmartMode(
+                () -> collectionWriter.prepareCollection(
                         exportModel,
                         project.getName(),
                         finalProjectDirectory,

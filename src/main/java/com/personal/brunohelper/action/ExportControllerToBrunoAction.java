@@ -7,6 +7,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
@@ -31,15 +32,28 @@ public final class ExportControllerToBrunoAction extends AnAction {
 
     @Override
     public void update(@NotNull AnActionEvent event) {
+        Project project = event.getProject();
+        if (project != null && DumbService.getInstance(project).isDumb()) {
+            event.getPresentation().setEnabledAndVisible(false);
+            return;
+        }
         ExportTarget target = ControllerContextResolver.resolveTarget(event);
         event.getPresentation().setEnabledAndVisible(target != null);
+        event.getPresentation().setEnabled(target != null);
     }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
         Project project = event.getProject();
+        if (project == null) {
+            return;
+        }
+        if (DumbService.getInstance(project).isDumb()) {
+            BrunoHelperNotifier.warn(project, "索引更新中，暂时无法导出，请等待索引完成后再试。");
+            return;
+        }
         ExportTarget target = ControllerContextResolver.resolveTarget(event);
-        if (project == null || target == null) {
+        if (target == null) {
             return;
         }
         if (!ensureOutputDirectoryConfigured(project)) {
