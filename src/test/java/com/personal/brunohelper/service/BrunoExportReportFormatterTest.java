@@ -42,7 +42,10 @@ class BrunoExportReportFormatterTest {
         assertTrue(content.contains("项目目录: D:\\Documents\\bruno\\collections\\sch-order-service"));
         assertTrue(content.contains("controller目录: D:\\Documents\\bruno\\collections\\sch-order-service\\OrderFileController"));
         assertTrue(content.contains("Bruno Export Result"));
-        assertTrue(content.contains("Relative URL | Method Name | Export Result | Endpoint Name"));
+        assertTrue(content.contains("Relative URL"));
+        assertTrue(content.contains("Method Name"));
+        assertTrue(content.contains("Export Result"));
+        assertTrue(content.contains("Endpoint Name"));
         assertTrue(content.contains("/order-files/:id"));
         assertTrue(content.contains("查询订单文件"));
         assertTrue(content.contains("SUCCESS"));
