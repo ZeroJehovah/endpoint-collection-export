@@ -43,24 +43,24 @@ public final class BrunoExportReportFormatter {
         int nameWidth = columnWidth(rows, Row::endpointName);
 
         StringBuilder builder = new StringBuilder();
-        String border = "+"
-                + repeat('-', urlWidth + 2) + "+"
-                + repeat('-', methodWidth + 2) + "+"
-                + repeat('-', statusWidth + 2) + "+"
-                + repeat('-', nameWidth + 2) + "+";
-        builder.append(border).append('\n');
         for (int index = 0; index < rows.size(); index++) {
             Row row = rows.get(index);
-            builder.append("| ").append(padRight(row.relativeUrl(), urlWidth))
+            builder.append(padRight(row.relativeUrl(), urlWidth))
                     .append(" | ").append(padRight(row.methodName(), methodWidth))
                     .append(" | ").append(padRight(row.status(), statusWidth))
                     .append(" | ").append(padRight(row.endpointName(), nameWidth))
-                    .append(" |").append('\n');
+                    .append('\n');
             if (index == 0) {
-                builder.append(border).append('\n');
+                builder.append(repeat('-', urlWidth))
+                        .append("-+-")
+                        .append(repeat('-', methodWidth))
+                        .append("-+-")
+                        .append(repeat('-', statusWidth))
+                        .append("-+-")
+                        .append(repeat('-', nameWidth))
+                        .append('\n');
             }
         }
-        builder.append(border).append('\n');
         return builder.toString();
     }
 
