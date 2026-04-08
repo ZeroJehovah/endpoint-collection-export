@@ -1,6 +1,7 @@
 package com.personal.brunohelper.service;
 
 import com.intellij.psi.PsiType;
+import com.personal.brunohelper.i18n.BrunoHelperBundle;
 import com.personal.brunohelper.model.ControllerExportModel;
 import com.personal.brunohelper.model.EndpointExportModel;
 import com.personal.brunohelper.model.EndpointParameterModel;
@@ -119,7 +120,7 @@ public final class BrunoCollectionWriter {
                         requestFile.endpointName(),
                         ExportEndpointStatus.SKIPPED,
                         fileName,
-                        "接口文件已存在，已跳过。"
+                        BrunoHelperBundle.message("export.endpoint.file.exists")
                 ));
                 sequence++;
                 continue;

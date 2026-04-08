@@ -6,6 +6,7 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.SmartPointerManager;
 import com.intellij.psi.SmartPsiElementPointer;
+import com.personal.brunohelper.i18n.BrunoHelperBundle;
 import com.personal.brunohelper.model.ControllerExportModel;
 import com.personal.brunohelper.model.ExportOutcome;
 import com.personal.brunohelper.model.ExportReport;
@@ -37,12 +38,12 @@ public final class BrunoControllerExportService implements ControllerExportServi
                 .inSmartMode(project)
                 .executeSynchronously();
         if (parsedModels == null) {
-            return ExportOutcome.failure("当前 controller 已失效，无法继续导出。");
+            return ExportOutcome.failure(BrunoHelperBundle.message("export.failure.controller.invalid"));
         }
         ControllerExportModel controllerModel = parsedModels.controllerModel();
         ControllerExportModel exportModel = parsedModels.exportModel();
         if (exportModel.getEndpoints().isEmpty()) {
-            return ExportOutcome.failure("未在当前 controller 中识别到 Spring MVC 接口。");
+            return ExportOutcome.failure(BrunoHelperBundle.message("export.failure.noEndpoints"));
         }
 
         BrunoHelperSettingsState settings = BrunoHelperSettingsState.getInstance();
@@ -56,7 +57,7 @@ public final class BrunoControllerExportService implements ControllerExportServi
             Files.createDirectories(projectDirectory);
         } catch (IOException exception) {
             return ExportOutcome.failure(
-                    "创建接口集合输出目录失败: " + exception.getMessage(),
+                    BrunoHelperBundle.message("export.failure.createDirectory", exception.getMessage()),
                     emptyReport(controllerModel, projectDirectory, controllerDirectory)
             );
         }
@@ -75,24 +76,31 @@ public final class BrunoControllerExportService implements ControllerExportServi
                 .inSmartMode(project)
                 .executeSynchronously();
         if (preparedCollection == null) {
-            return ExportOutcome.failure("当前 controller 已失效，无法继续导出。", emptyReport(controllerModel));
+            return ExportOutcome.failure(
+                    BrunoHelperBundle.message("export.failure.controller.invalid"),
+                    emptyReport(controllerModel)
+            );
         }
 
         try {
             BrunoCollectionWriter.GenerationResult result = collectionWriter.writePreparedCollection(preparedCollection);
             ExportReport report = buildReport(controllerModel, result);
-            String message = "已更新接口集合项目 `" + result.collectionName()
-                    + "`，项目目录: " + result.projectDirectory()
-                    + "，controller目录: " + result.controllerDirectory()
-                    + "，新增 " + result.createdRequestCount() + " 个接口文件，跳过 " + result.skippedRequestCount()
-                    + " 个已存在文件，失败 " + result.failedRequestCount() + " 个接口文件。";
+            String message = BrunoHelperBundle.message(
+                    "export.outcome.updated",
+                    result.collectionName(),
+                    result.projectDirectory(),
+                    result.controllerDirectory(),
+                    result.createdRequestCount(),
+                    result.skippedRequestCount(),
+                    result.failedRequestCount()
+            );
             if (result.failedRequestCount() > 0) {
                 return ExportOutcome.failure(message, report);
             }
             return ExportOutcome.success(message, report);
         } catch (IOException exception) {
             return ExportOutcome.failure(
-                    "生成接口集合文件失败: " + exception.getMessage(),
+                    BrunoHelperBundle.message("export.failure.generateFiles", exception.getMessage()),
                     emptyReport(controllerModel, finalProjectDirectory, finalControllerDirectory)
             );
         }

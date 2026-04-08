@@ -14,6 +14,7 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.SmartPsiElementPointer;
 import com.personal.brunohelper.context.ControllerContextResolver;
 import com.personal.brunohelper.context.ControllerContextResolver.ExportTarget;
+import com.personal.brunohelper.i18n.BrunoHelperBundle;
 import com.personal.brunohelper.model.ExportOutcome;
 import com.personal.brunohelper.notification.BrunoHelperNotifier;
 import com.personal.brunohelper.service.BrunoControllerExportService;
@@ -49,7 +50,7 @@ public final class ExportControllerToBrunoAction extends AnAction {
             return;
         }
         if (DumbService.getInstance(project).isDumb()) {
-            BrunoHelperNotifier.warn(project, "索引更新中，暂时无法导出，请等待索引完成后再试。");
+            BrunoHelperNotifier.warn(project, BrunoHelperBundle.message("action.export.indexing"));
             return;
         }
         ExportTarget target = ControllerContextResolver.resolveTarget(event);
@@ -57,14 +58,14 @@ public final class ExportControllerToBrunoAction extends AnAction {
             return;
         }
         if (!ensureOutputDirectoryConfigured(project)) {
-            BrunoHelperNotifier.warn(project, "已取消导出，未完成接口集合输出目录配置。");
+            BrunoHelperNotifier.warn(project, BrunoHelperBundle.message("action.export.notConfigured"));
             return;
         }
         BrunoControllerExportService exportService = new BrunoControllerExportService(project);
         SmartPsiElementPointer<PsiClass> controllerPointer = exportService.createPointer(target.controllerClass());
         SmartPsiElementPointer<PsiMethod> methodPointer = exportService.createPointer(target.targetMethod());
 
-        ProgressManager.getInstance().run(new Task.Backgroundable(project, "导出接口集合", false) {
+        ProgressManager.getInstance().run(new Task.Backgroundable(project, BrunoHelperBundle.message("action.export.progress"), false) {
             @Override
             public void run(@NotNull ProgressIndicator indicator) {
                 ExportOutcome outcome = exportService.export(controllerPointer, methodPointer);

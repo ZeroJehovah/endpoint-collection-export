@@ -1,5 +1,6 @@
 package com.personal.brunohelper.service;
 
+import com.personal.brunohelper.i18n.BrunoHelperBundle;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.InvalidPathException;
@@ -13,16 +14,16 @@ public final class BrunoExportOptions {
 
     public static @Nullable String validateBaseOutputDirectory(@Nullable String configuredDirectory, boolean allowBlank) {
         if (configuredDirectory == null || configuredDirectory.isBlank()) {
-            return allowBlank ? null : "请输入接口集合基础输出目录。";
+            return allowBlank ? null : BrunoHelperBundle.message("export.validation.baseOutput.blank");
         }
         Path outputDirectory;
         try {
             outputDirectory = Paths.get(configuredDirectory.trim()).normalize();
         } catch (InvalidPathException exception) {
-            return "接口集合基础输出目录格式无效。";
+            return BrunoHelperBundle.message("export.validation.baseOutput.invalid");
         }
         if (!outputDirectory.isAbsolute()) {
-            return "接口集合基础输出目录必须使用绝对路径。";
+            return BrunoHelperBundle.message("export.validation.baseOutput.absolute");
         }
         return null;
     }

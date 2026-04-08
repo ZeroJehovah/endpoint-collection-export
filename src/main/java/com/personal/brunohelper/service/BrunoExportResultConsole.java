@@ -9,6 +9,7 @@ import com.intellij.execution.ui.RunContentDescriptor;
 import com.intellij.execution.ui.RunContentManager;
 import com.intellij.ide.actions.RevealFileAction;
 import com.intellij.openapi.project.Project;
+import com.personal.brunohelper.i18n.BrunoHelperBundle;
 import com.personal.brunohelper.model.ExportOutcome;
 import com.personal.brunohelper.model.ExportReport;
 import org.jetbrains.annotations.Nullable;
@@ -27,8 +28,8 @@ public final class BrunoExportResultConsole {
 
         ConsoleView consoleView = TextConsoleBuilderFactory.getInstance().createBuilder(project).getConsole();
         consoleView.print(formatter.formatSummary(report), ConsoleViewContentType.NORMAL_OUTPUT);
-        printDirectoryLine(consoleView, "项目目录", report.projectDirectory());
-        printDirectoryLine(consoleView, "controller目录", report.controllerDirectory());
+        printDirectoryLine(consoleView, BrunoHelperBundle.message("export.report.directory.project"), report.projectDirectory());
+        printDirectoryLine(consoleView, BrunoHelperBundle.message("export.report.directory.controller"), report.controllerDirectory());
         consoleView.print("\n", ConsoleViewContentType.NORMAL_OUTPUT);
         consoleView.print(formatter.formatTable(report), ConsoleViewContentType.NORMAL_OUTPUT);
         consoleView.requestScrollingToEnd();
@@ -37,7 +38,7 @@ public final class BrunoExportResultConsole {
                 consoleView,
                 null,
                 consoleView.getComponent(),
-                "Collection Export Result - " + report.className(),
+                BrunoHelperBundle.message("export.console.title", report.className()),
                 null,
                 null,
                 consoleView.createConsoleActions()
