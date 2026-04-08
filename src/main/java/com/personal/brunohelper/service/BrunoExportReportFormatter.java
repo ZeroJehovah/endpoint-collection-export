@@ -1,5 +1,6 @@
 package com.personal.brunohelper.service;
 
+import com.personal.brunohelper.i18n.BrunoHelperBundle;
 import com.personal.brunohelper.model.ExportEndpointResult;
 import com.personal.brunohelper.model.ExportReport;
 
@@ -14,20 +15,25 @@ public final class BrunoExportReportFormatter {
 
     public String formatSummary(ExportReport report) {
         StringBuilder builder = new StringBuilder();
-        builder.append("Collection Export Result").append('\n');
-        builder.append("服务名: ").append(report.serviceName()).append('\n');
-        builder.append("类名: ").append(report.className()).append('\n');
-        builder.append("类里的接口总数: ").append(report.controllerEndpointCount()).append('\n');
-        builder.append("执行导出的接口数量: ").append(report.exportedEndpointCount()).append('\n');
-        builder.append("跳过的接口数量: ").append(report.skippedEndpointCount()).append('\n');
-        builder.append("实际成功导出的接口数量: ").append(report.succeededEndpointCount()).append('\n');
-        builder.append("失败的接口数量: ").append(report.failedEndpointCount()).append('\n');
+        builder.append(BrunoHelperBundle.message("export.report.title")).append('\n');
+        builder.append(BrunoHelperBundle.message("export.report.summary.service")).append(' ').append(report.serviceName()).append('\n');
+        builder.append(BrunoHelperBundle.message("export.report.summary.class")).append(' ').append(report.className()).append('\n');
+        builder.append(BrunoHelperBundle.message("export.report.summary.total")).append(' ').append(report.controllerEndpointCount()).append('\n');
+        builder.append(BrunoHelperBundle.message("export.report.summary.selected")).append(' ').append(report.exportedEndpointCount()).append('\n');
+        builder.append(BrunoHelperBundle.message("export.report.summary.skipped")).append(' ').append(report.skippedEndpointCount()).append('\n');
+        builder.append(BrunoHelperBundle.message("export.report.summary.success")).append(' ').append(report.succeededEndpointCount()).append('\n');
+        builder.append(BrunoHelperBundle.message("export.report.summary.failed")).append(' ').append(report.failedEndpointCount()).append('\n');
         return builder.toString();
     }
 
     public String formatTable(ExportReport report) {
         List<Row> rows = new ArrayList<>();
-        rows.add(new Row("Relative URL", "Method Name", "Export Result", "Endpoint Name"));
+        rows.add(new Row(
+                BrunoHelperBundle.message("export.report.table.relativeUrl"),
+                BrunoHelperBundle.message("export.report.table.methodName"),
+                BrunoHelperBundle.message("export.report.table.exportResult"),
+                BrunoHelperBundle.message("export.report.table.endpointName")
+        ));
         for (ExportEndpointResult endpointResult : report.endpointResults()) {
             rows.add(new Row(
                     endpointResult.relativeUrl(),
@@ -67,10 +73,16 @@ public final class BrunoExportReportFormatter {
     private String formatDirectorySummary(ExportReport report) {
         StringBuilder builder = new StringBuilder();
         if (report.projectDirectory() != null) {
-            builder.append("项目目录: ").append(report.projectDirectory()).append('\n');
+            builder.append(BrunoHelperBundle.message("export.report.directory.project"))
+                    .append(": ")
+                    .append(report.projectDirectory())
+                    .append('\n');
         }
         if (report.controllerDirectory() != null) {
-            builder.append("controller目录: ").append(report.controllerDirectory()).append('\n');
+            builder.append(BrunoHelperBundle.message("export.report.directory.controller"))
+                    .append(": ")
+                    .append(report.controllerDirectory())
+                    .append('\n');
         }
         return builder.toString();
     }

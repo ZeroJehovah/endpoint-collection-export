@@ -2,7 +2,8 @@
     <id>io.github.zerojehovah.endpointcollectionexport</id>
     <name>Endpoint Collection Export</name>
     <vendor url="https://github.com/ZeroJehovah" email="icerovah@gmail.com">ZeroJehovah</vendor>
-    <description><![CDATA[Exports Spring Boot controllers as API collection files.<br/><br/>Generates Bruno-compatible OpenCollection YAML for API workflows.<br/><br/><ul><li>Export a whole controller or a single endpoint from the context menu.</li><li>Generate <code>opencollection.yml</code>, <code>folder.yml</code>, and workspace entries automatically.</li><li>Reuse existing project, controller, and endpoint files instead of overwriting them.</li><li>Include Spring endpoints declared in inherited base controllers.</li></ul><br/><br/>Source code: <a href="https://github.com/ZeroJehovah/endpoint-collection-export">GitHub</a>]]></description>
+    <description><![CDATA[<p><b>English</b></p><p>Export Spring Boot controllers as API collection files and generate Bruno-compatible OpenCollection YAML.</p><ul><li>Export an entire controller or a single endpoint from the context menu.</li><li>Generate <code>opencollection.yml</code>, <code>folder.yml</code>, and workspace entries automatically.</li><li>Reuse existing project, controller, and endpoint files instead of overwriting them.</li><li>Include Spring endpoints declared in inherited base controllers.</li></ul><p><b>中文</b></p><p>将 Spring Boot Controller 导出为 API collection 文件，并生成与 Bruno 兼容的 OpenCollection YAML。</p><ul><li>支持从右键菜单导出整个 Controller，或仅导出当前方法对应的单个接口。</li><li>自动生成 <code>opencollection.yml</code>、<code>folder.yml</code> 和 workspace 条目。</li><li>复用已存在的项目、controller 和接口文件，不覆盖已有内容。</li><li>包含继承基类中已声明的 Spring 接口。</li></ul><p>Source code / 源码：<a href="https://github.com/ZeroJehovah/endpoint-collection-export">GitHub</a></p>]]></description>
+    <resource-bundle>messages.BrunoHelperBundle</resource-bundle>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.java</depends>
@@ -16,7 +17,7 @@
         <applicationConfigurable
                 id="io.github.zerojehovah.endpointcollectionexport.settings"
                 parentId="tools"
-                displayName="Endpoint Collection Export"
+                displayName="%settings.display.name"
                 instance="com.personal.brunohelper.settings.BrunoHelperConfigurable"/>
     </extensions>
 
@@ -24,8 +25,8 @@
         <action
                 id="io.github.zerojehovah.endpointcollectionexport.action.ExportControllerAction"
                 class="com.personal.brunohelper.action.ExportControllerToBrunoAction"
-                text="导出到 Bruno"
-                description="导出当前 Spring Controller 到 Bruno">
+                text="%action.export.toBruno.text"
+                description="%action.export.toBruno.description">
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
         </action>

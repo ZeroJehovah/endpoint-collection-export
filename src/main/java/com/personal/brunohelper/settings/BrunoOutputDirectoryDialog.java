@@ -7,6 +7,7 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.TextBrowseFolderListener;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.ui.ValidationInfo;
+import com.personal.brunohelper.i18n.BrunoHelperBundle;
 import com.personal.brunohelper.service.BrunoExportOptions;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,11 +24,11 @@ public final class BrunoOutputDirectoryDialog extends DialogWrapper {
 
     public BrunoOutputDirectoryDialog(@Nullable Project project, @Nullable String initialValue) {
         super(project);
-        setTitle("配置接口集合基础输出目录");
+        setTitle(BrunoHelperBundle.message("settings.output.directory.dialog.title"));
         outputDirectoryField.setText(initialValue == null ? "" : initialValue.trim());
         FileChooserDescriptor descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor()
-                .withTitle("选择接口集合基础输出目录")
-                .withDescription("该配置为全局配置，对所有项目生效。");
+                .withTitle(BrunoHelperBundle.message("settings.output.directory.chooser.title"))
+                .withDescription(BrunoHelperBundle.message("settings.output.directory.chooser.description"));
         outputDirectoryField.addBrowseFolderListener(new TextBrowseFolderListener(descriptor, project));
         init();
     }
@@ -42,7 +43,7 @@ public final class BrunoOutputDirectoryDialog extends DialogWrapper {
         constraints.anchor = GridBagConstraints.WEST;
         constraints.fill = GridBagConstraints.NONE;
         constraints.insets = new Insets(0, 0, 8, 8);
-        panel.add(new JLabel("接口集合基础输出目录"), constraints);
+        panel.add(new JLabel(BrunoHelperBundle.message("settings.output.directory.label")), constraints);
 
         constraints.gridx = 1;
         constraints.weightx = 1;
@@ -55,7 +56,7 @@ public final class BrunoOutputDirectoryDialog extends DialogWrapper {
         constraints.weightx = 1;
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.insets = new Insets(0, 0, 0, 0);
-        panel.add(new JLabel("该配置为全局配置，对所有项目生效；导出目录结构为：基础目录 / 项目名 / controller名。"), constraints);
+        panel.add(new JLabel(BrunoHelperBundle.message("settings.output.directory.dialog.help")), constraints);
         return panel;
     }
 
