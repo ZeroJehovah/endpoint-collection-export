@@ -55,4 +55,24 @@ class BrunoExportReportFormatterTest {
         assertTrue(!content.contains("GET-samples-id.yml"));
         assertTrue(!content.contains("+--"));
     }
+
+    @Test
+    void shouldLeaveBlankLineAfterSummaryTitle() {
+        ExportReport report = new ExportReport(
+                "demo-service",
+                "SampleController",
+                null,
+                null,
+                1,
+                1,
+                0,
+                1,
+                0,
+                List.of()
+        );
+
+        String summary = new BrunoExportReportFormatter().formatSummary(report);
+
+        assertTrue(summary.startsWith(BrunoHelperBundle.message("export.report.title") + "\n\n"));
+    }
 }
