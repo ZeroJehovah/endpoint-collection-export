@@ -3,6 +3,21 @@ plugins {
     id("org.jetbrains.intellij.platform") version "2.13.1"
 }
 
+fun optionalSetting(vararg names: String): String? =
+    names.asSequence()
+        .mapNotNull { name ->
+            providers.environmentVariable(name).orNull?.trim()?.takeIf { it.isNotEmpty() }
+                ?: providers.gradleProperty(name).orNull?.trim()?.takeIf { it.isNotEmpty() }
+        }
+        .firstOrNull()
+
+val marketplaceToken = optionalSetting("JETBRAINS_MARKETPLACE_TOKEN", "intellijPlatformPublishingToken")
+val marketplaceChannel = optionalSetting("JETBRAINS_MARKETPLACE_CHANNEL", "intellijPlatformPublishingChannel")
+val marketplaceHidden = optionalSetting("JETBRAINS_MARKETPLACE_HIDDEN", "intellijPlatformPublishingHidden")
+val signingCertificateChain = optionalSetting("JETBRAINS_CERTIFICATE_CHAIN", "intellijPlatformSigningCertificateChain")
+val signingPrivateKey = optionalSetting("JETBRAINS_PRIVATE_KEY", "intellijPlatformSigningPrivateKey")
+val signingPrivateKeyPassword = optionalSetting("JETBRAINS_PRIVATE_KEY_PASSWORD", "intellijPlatformSigningPrivateKeyPassword")
+
 group = "io.github.zerojehovah.endpointcollectionexport"
 version = "1.0.0"
 
@@ -43,9 +58,27 @@ intellijPlatform {
             </ul>
         """.trimIndent()
     }
+
+    publishing {
+        marketplaceToken?.let { token = it }
+        marketplaceChannel?.let { channels = listOf(it) }
+        marketplaceHidden?.let { hidden = it.toBoolean() }
+    }
+
+    signing {
+        signingCertificateChain?.let { certificateChain = it }
+        signingPrivateKey?.let { privateKey = it }
+        signingPrivateKeyPassword?.let { password = it }
+    }
 }
 
 tasks {
+    register("printVersion") {
+        doLast {
+            println(project.version)
+        }
+    }
+
     withType<JavaCompile> {
         sourceCompatibility = "17"
         targetCompatibility = "17"
