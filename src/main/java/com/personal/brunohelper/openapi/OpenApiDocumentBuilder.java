@@ -262,7 +262,7 @@ public final class OpenApiDocumentBuilder {
         if (description != null && !description.isBlank()) {
             propertySchema.setDescription(description);
         }
-        schema.addProperties(name, propertySchema);
+        schema.addProperty(name, propertySchema);
         if (required) {
             requiredFields.add(name);
         }

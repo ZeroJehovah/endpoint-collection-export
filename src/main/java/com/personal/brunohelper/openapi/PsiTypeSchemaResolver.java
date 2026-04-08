@@ -8,6 +8,7 @@ import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiModifier;
 import com.intellij.psi.PsiSubstitutor;
 import com.intellij.psi.PsiType;
+import com.intellij.psi.PsiTypes;
 import com.personal.brunohelper.parser.AnnotationUtils;
 import com.personal.brunohelper.parser.DocCommentUtil;
 import com.personal.brunohelper.parser.PsiTypeSupport;
@@ -62,20 +63,20 @@ public final class PsiTypeSchemaResolver {
         if (PsiTypeSupport.isBinaryResponseType(type) || PsiTypeSupport.isMultipartType(type)) {
             return new BinarySchema();
         }
-        if (type == PsiType.VOID || "void".equals(type.getCanonicalText()) || CommonClassNames.JAVA_LANG_VOID.equals(type.getCanonicalText())) {
+        if (type.equals(PsiTypes.voidType()) || "void".equals(type.getCanonicalText()) || CommonClassNames.JAVA_LANG_VOID.equals(type.getCanonicalText())) {
             return null;
         }
-        if (type.equals(PsiType.BOOLEAN) || CommonClassNames.JAVA_LANG_BOOLEAN.equals(type.getCanonicalText())) {
+        if (type.equals(PsiTypes.booleanType()) || CommonClassNames.JAVA_LANG_BOOLEAN.equals(type.getCanonicalText())) {
             return new BooleanSchema();
         }
-        if (type.equals(PsiType.BYTE) || type.equals(PsiType.SHORT) || type.equals(PsiType.INT) || type.equals(PsiType.LONG)
+        if (type.equals(PsiTypes.byteType()) || type.equals(PsiTypes.shortType()) || type.equals(PsiTypes.intType()) || type.equals(PsiTypes.longType())
                 || CommonClassNames.JAVA_LANG_BYTE.equals(type.getCanonicalText())
                 || CommonClassNames.JAVA_LANG_SHORT.equals(type.getCanonicalText())
                 || CommonClassNames.JAVA_LANG_INTEGER.equals(type.getCanonicalText())
                 || CommonClassNames.JAVA_LANG_LONG.equals(type.getCanonicalText())) {
             return new IntegerSchema();
         }
-        if (type.equals(PsiType.FLOAT) || type.equals(PsiType.DOUBLE)
+        if (type.equals(PsiTypes.floatType()) || type.equals(PsiTypes.doubleType())
                 || CommonClassNames.JAVA_LANG_FLOAT.equals(type.getCanonicalText())
                 || CommonClassNames.JAVA_LANG_DOUBLE.equals(type.getCanonicalText())
                 || "java.math.BigDecimal".equals(type.getCanonicalText())
@@ -114,7 +115,7 @@ public final class PsiTypeSchemaResolver {
 
     public PsiType unwrapResponseType(@Nullable PsiType type) {
         if (type == null) {
-            return PsiType.VOID;
+            return PsiTypes.voidType();
         }
         PsiType current = type;
         while (current instanceof PsiClassType classType) {
@@ -216,7 +217,7 @@ public final class PsiTypeSchemaResolver {
             if (!fieldDescription.isBlank()) {
                 propertySchema.setDescription(fieldDescription);
             }
-            schema.addProperties(fieldName, propertySchema);
+            schema.addProperty(fieldName, propertySchema);
             if (AnnotationUtils.hasRequiredValidation(field)) {
                 requiredFields.add(fieldName);
             }

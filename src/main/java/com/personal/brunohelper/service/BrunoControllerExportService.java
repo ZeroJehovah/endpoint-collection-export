@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.atomic.AtomicReference;
 
 public final class BrunoControllerExportService implements ControllerExportService {
 
@@ -32,9 +33,11 @@ public final class BrunoControllerExportService implements ControllerExportServi
             SmartPsiElementPointer<PsiClass> controllerPointer,
             @Nullable SmartPsiElementPointer<PsiMethod> methodPointer
     ) {
-        ParsedControllerModels parsedModels = DumbService.getInstance(project).runReadActionInSmartMode(
-                () -> buildModels(controllerPointer, methodPointer)
+        AtomicReference<ParsedControllerModels> parsedModelsRef = new AtomicReference<>();
+        DumbService.getInstance(project).runReadActionInSmartMode(
+                () -> parsedModelsRef.set(buildModels(controllerPointer, methodPointer))
         );
+        ParsedControllerModels parsedModels = parsedModelsRef.get();
         if (parsedModels == null) {
             return ExportOutcome.failure("当前 controller 已失效，无法继续导出。");
         }
@@ -63,15 +66,17 @@ public final class BrunoControllerExportService implements ControllerExportServi
         Path finalProjectDirectory = projectDirectory;
         Path finalControllerDirectory = controllerDirectory;
         Path finalWorkspaceFile = workspaceFile;
-        BrunoCollectionWriter.PreparedCollection preparedCollection = DumbService.getInstance(project).runReadActionInSmartMode(
-                () -> collectionWriter.prepareCollection(
+        AtomicReference<BrunoCollectionWriter.PreparedCollection> preparedCollectionRef = new AtomicReference<>();
+        DumbService.getInstance(project).runReadActionInSmartMode(
+                () -> preparedCollectionRef.set(collectionWriter.prepareCollection(
                         exportModel,
                         project.getName(),
                         finalProjectDirectory,
                         finalControllerDirectory,
                         finalWorkspaceFile
-                )
+                ))
         );
+        BrunoCollectionWriter.PreparedCollection preparedCollection = preparedCollectionRef.get();
         if (preparedCollection == null) {
             return ExportOutcome.failure("当前 controller 已失效，无法继续导出。", emptyReport(controllerModel));
         }

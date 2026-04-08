@@ -1,8 +1,10 @@
 package com.personal.brunohelper.settings;
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
+import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.TextBrowseFolderListener;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.personal.brunohelper.service.BrunoExportOptions;
@@ -23,12 +25,10 @@ public final class BrunoOutputDirectoryDialog extends DialogWrapper {
         super(project);
         setTitle("配置接口集合基础输出目录");
         outputDirectoryField.setText(initialValue == null ? "" : initialValue.trim());
-        outputDirectoryField.addBrowseFolderListener(
-                "选择接口集合基础输出目录",
-                "该配置为全局配置，对所有项目生效。",
-                project,
-                FileChooserDescriptorFactory.createSingleFolderDescriptor()
-        );
+        FileChooserDescriptor descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor()
+                .withTitle("选择接口集合基础输出目录")
+                .withDescription("该配置为全局配置，对所有项目生效。");
+        outputDirectoryField.addBrowseFolderListener(new TextBrowseFolderListener(descriptor, project));
         init();
     }
 

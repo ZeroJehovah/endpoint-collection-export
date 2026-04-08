@@ -1,8 +1,10 @@
 package com.personal.brunohelper.settings;
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
+import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.ui.TextBrowseFolderListener;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.personal.brunohelper.service.BrunoExportOptions;
 import org.jetbrains.annotations.Nls;
@@ -30,12 +32,10 @@ public final class BrunoHelperConfigurable implements Configurable {
         if (panel == null) {
             panel = new JPanel(new GridBagLayout());
             outputDirectoryField = new TextFieldWithBrowseButton();
-            outputDirectoryField.addBrowseFolderListener(
-                    "选择接口集合基础输出目录",
-                    "该配置为全局配置，对所有项目生效。",
-                    null,
-                    FileChooserDescriptorFactory.createSingleFolderDescriptor()
-            );
+            FileChooserDescriptor descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor()
+                    .withTitle("选择接口集合基础输出目录")
+                    .withDescription("该配置为全局配置，对所有项目生效。");
+            outputDirectoryField.addBrowseFolderListener(new TextBrowseFolderListener(descriptor));
 
             GridBagConstraints constraints = new GridBagConstraints();
             constraints.gridx = 0;

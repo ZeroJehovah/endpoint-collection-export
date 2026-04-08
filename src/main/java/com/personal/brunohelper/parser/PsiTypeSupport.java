@@ -6,6 +6,7 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiClassType;
 import com.intellij.psi.PsiPrimitiveType;
 import com.intellij.psi.PsiType;
+import com.intellij.psi.PsiTypes;
 import com.intellij.psi.util.InheritanceUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -110,6 +111,6 @@ public final class PsiTypeSupport {
     }
 
     private static boolean isByteArray(PsiArrayType type) {
-        return PsiType.BYTE.equals(type.getComponentType());
+        return PsiTypes.byteType().equals(type.getComponentType());
     }
 }

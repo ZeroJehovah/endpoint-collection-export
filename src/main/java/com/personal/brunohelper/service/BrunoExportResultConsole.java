@@ -1,12 +1,12 @@
 package com.personal.brunohelper.service;
 
-import com.intellij.execution.ExecutionManager;
 import com.intellij.execution.filters.HyperlinkInfo;
 import com.intellij.execution.executors.DefaultRunExecutor;
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.execution.ui.RunContentDescriptor;
+import com.intellij.execution.ui.RunContentManager;
 import com.intellij.ide.actions.RevealFileAction;
 import com.intellij.openapi.project.Project;
 import com.personal.brunohelper.model.ExportOutcome;
@@ -44,8 +44,7 @@ public final class BrunoExportResultConsole {
         );
         descriptor.setActivateToolWindowWhenAdded(true);
         descriptor.setSelectContentWhenAdded(true);
-        ExecutionManager.getInstance(project)
-                .getContentManager()
+        RunContentManager.getInstance(project)
                 .showRunContent(DefaultRunExecutor.getRunExecutorInstance(), descriptor);
     }
 
