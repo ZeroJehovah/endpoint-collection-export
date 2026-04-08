@@ -2,7 +2,7 @@
     <id>io.github.zerojehovah.endpointcollectionexport</id>
     <name>Endpoint Collection Export</name>
     <vendor url="https://github.com/ZeroJehovah" email="icerovah@gmail.com">ZeroJehovah</vendor>
-    <description><![CDATA[Exports Spring Boot controllers as API collection files.<br/><br/>Generates Bruno-compatible OpenCollection YAML for API workflows.<br/><br/><ul><li>Export a whole controller or a single endpoint from the context menu.</li><li>Generate <code>opencollection.yml</code>, <code>folder.yml</code>, and workspace entries automatically.</li><li>Reuse existing project, controller, and endpoint files instead of overwriting them.</li><li>Include Spring endpoints declared in inherited base controllers.</li></ul>Source code: <a href="https://github.com/ZeroJehovah/endpoint-collection-export">GitHub</a>]]></description>
+    <description><![CDATA[Exports Spring Boot controllers as API collection files.<br/><br/>Generates Bruno-compatible OpenCollection YAML for API workflows.<br/><br/><ul><li>Export a whole controller or a single endpoint from the context menu.</li><li>Generate <code>opencollection.yml</code>, <code>folder.yml</code>, and workspace entries automatically.</li><li>Reuse existing project, controller, and endpoint files instead of overwriting them.</li><li>Include Spring endpoints declared in inherited base controllers.</li></ul><br/><br/>Source code: <a href="https://github.com/ZeroJehovah/endpoint-collection-export">GitHub</a>]]></description>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.java</depends>
