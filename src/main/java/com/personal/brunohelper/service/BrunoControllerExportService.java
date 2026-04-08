@@ -1,6 +1,6 @@
 package com.personal.brunohelper.service;
 
-import com.intellij.openapi.project.DumbService;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
@@ -16,7 +16,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.concurrent.atomic.AtomicReference;
 
 public final class BrunoControllerExportService implements ControllerExportService {
 
@@ -33,11 +32,10 @@ public final class BrunoControllerExportService implements ControllerExportServi
             SmartPsiElementPointer<PsiClass> controllerPointer,
             @Nullable SmartPsiElementPointer<PsiMethod> methodPointer
     ) {
-        AtomicReference<ParsedControllerModels> parsedModelsRef = new AtomicReference<>();
-        DumbService.getInstance(project).runReadActionInSmartMode(
-                () -> parsedModelsRef.set(buildModels(controllerPointer, methodPointer))
-        );
-        ParsedControllerModels parsedModels = parsedModelsRef.get();
+        ParsedControllerModels parsedModels = ReadAction
+                .nonBlocking(() -> buildModels(controllerPointer, methodPointer))
+                .inSmartMode(project)
+                .executeSynchronously();
         if (parsedModels == null) {
             return ExportOutcome.failure("当前 controller 已失效，无法继续导出。");
         }
@@ -66,17 +64,16 @@ public final class BrunoControllerExportService implements ControllerExportServi
         Path finalProjectDirectory = projectDirectory;
         Path finalControllerDirectory = controllerDirectory;
         Path finalWorkspaceFile = workspaceFile;
-        AtomicReference<BrunoCollectionWriter.PreparedCollection> preparedCollectionRef = new AtomicReference<>();
-        DumbService.getInstance(project).runReadActionInSmartMode(
-                () -> preparedCollectionRef.set(collectionWriter.prepareCollection(
+        BrunoCollectionWriter.PreparedCollection preparedCollection = ReadAction
+                .nonBlocking(() -> collectionWriter.prepareCollection(
                         exportModel,
                         project.getName(),
                         finalProjectDirectory,
                         finalControllerDirectory,
                         finalWorkspaceFile
                 ))
-        );
-        BrunoCollectionWriter.PreparedCollection preparedCollection = preparedCollectionRef.get();
+                .inSmartMode(project)
+                .executeSynchronously();
         if (preparedCollection == null) {
             return ExportOutcome.failure("当前 controller 已失效，无法继续导出。", emptyReport(controllerModel));
         }
