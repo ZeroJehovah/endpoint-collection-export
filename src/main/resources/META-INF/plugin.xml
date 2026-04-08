@@ -17,16 +17,15 @@
         <applicationConfigurable
                 id="io.github.zerojehovah.endpointcollectionexport.settings"
                 parentId="tools"
-                displayName="%settings.display.name"
+                key="settings.display.name"
+                bundle="messages.BrunoHelperBundle"
                 instance="com.personal.brunohelper.settings.BrunoHelperConfigurable"/>
     </extensions>
 
-    <actions>
+    <actions resource-bundle="messages.BrunoHelperBundle">
         <action
                 id="io.github.zerojehovah.endpointcollectionexport.action.ExportControllerAction"
-                class="com.personal.brunohelper.action.ExportControllerToBrunoAction"
-                text="%action.export.toBruno.text"
-                description="%action.export.toBruno.description">
+                class="com.personal.brunohelper.action.ExportControllerToBrunoAction">
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
         </action>
