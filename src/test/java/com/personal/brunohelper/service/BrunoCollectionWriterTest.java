@@ -28,16 +28,16 @@ class BrunoCollectionWriterTest {
     void shouldGenerateOpenCollectionFilesForGetEndpoint() throws IOException {
         BrunoCollectionWriter writer = new BrunoCollectionWriter();
         Path projectDirectory = tempDir.resolve("collections").resolve("demo-project");
-        Path controllerDirectory = projectDirectory.resolve("OrderFileController");
+        Path controllerDirectory = projectDirectory.resolve("SampleController");
         ControllerExportModel model = new ControllerExportModel(
-                "OrderFileController",
-                "订单文件",
-                "导出订单文件接口",
+                "SampleController",
+                "示例接口",
+                "导出示例接口",
                 List.of(new EndpointExportModel(
-                        "OrderFileController.getById",
-                        "查询订单文件",
-                        "根据订单文件ID查询详情",
-                        List.of("/order-files/{id}"),
+                        "SampleController.getById",
+                        "查询示例接口",
+                        "根据示例接口ID查询详情",
+                        List.of("/samples/{id}"),
                         Set.of("GET"),
                         List.of(
                                 new EndpointParameterModel("id", "", true, null, ParameterSource.PATH_VARIABLE, PsiType.INT),
@@ -59,10 +59,10 @@ class BrunoCollectionWriterTest {
         assertEquals(0, result.failedRequestCount());
         assertEquals(1, result.endpointResults().size());
         assertEquals(ExportEndpointStatus.SUCCESS, result.endpointResults().get(0).status());
-        assertEquals("/order-files/:id", result.endpointResults().get(0).relativeUrl());
+        assertEquals("/samples/:id", result.endpointResults().get(0).relativeUrl());
         assertTrue(Files.exists(result.projectDirectory().resolve("opencollection.yml")));
         assertTrue(Files.exists(result.controllerDirectory().resolve("folder.yml")));
-        assertTrue(Files.exists(result.controllerDirectory().resolve("GET-order-files-id-OrderFileController.getById.yml")));
+        assertTrue(Files.exists(result.controllerDirectory().resolve("GET-samples-id-SampleController.getById.yml")));
         assertTrue(Files.notExists(result.controllerDirectory().resolve("opencollection.yml")));
         assertTrue(Files.exists(tempDir.resolve("workspace.yml")));
 
@@ -75,11 +75,11 @@ class BrunoCollectionWriterTest {
         assertTrue(workspaceFile.contains("path: \"collections/demo-project\""));
         String folderFile = Files.readString(result.controllerDirectory().resolve("folder.yml"));
         assertTrue(folderFile.contains("info:"));
-        assertTrue(folderFile.contains("name: \"订单文件\""));
+        assertTrue(folderFile.contains("name: \"示例接口\""));
 
-        Path requestFile = result.controllerDirectory().resolve("GET-order-files-id-OrderFileController.getById.yml");
+        Path requestFile = result.controllerDirectory().resolve("GET-samples-id-SampleController.getById.yml");
         String requestContent = Files.readString(requestFile);
-        assertTrue(requestContent.contains("url: \"{{baseUrl}}/order-files/:id\""));
+        assertTrue(requestContent.contains("url: \"{{baseUrl}}/samples/:id\""));
         assertTrue(requestContent.contains("type: \"path\""));
         assertTrue(requestContent.contains("name: \"page\""));
         assertTrue(requestContent.contains("value: \"1\""));
@@ -158,20 +158,20 @@ class BrunoCollectionWriterTest {
     void shouldKeepExistingControllerDirectoryContents() throws IOException {
         BrunoCollectionWriter writer = new BrunoCollectionWriter();
         Path projectDirectory = tempDir.resolve("collections").resolve("demo-project");
-        Path controllerDirectory = projectDirectory.resolve("OrderFileController");
+        Path controllerDirectory = projectDirectory.resolve("SampleController");
         Files.createDirectories(controllerDirectory);
         Path existingNote = controllerDirectory.resolve("README.txt");
         Files.writeString(existingNote, "keep-me", java.nio.charset.StandardCharsets.UTF_8);
 
         ControllerExportModel model = new ControllerExportModel(
-                "OrderFileController",
-                "订单文件",
+                "SampleController",
+                "示例接口",
                 "",
                 List.of(new EndpointExportModel(
-                        "OrderFileController.getById",
-                        "查询订单文件",
+                        "SampleController.getById",
+                        "查询示例接口",
                         "",
-                        List.of("/order-files/{id}"),
+                        List.of("/samples/{id}"),
                         Set.of("GET"),
                         List.of(new EndpointParameterModel("id", "", true, null, ParameterSource.PATH_VARIABLE, PsiType.INT)),
                         null,
@@ -184,27 +184,27 @@ class BrunoCollectionWriterTest {
         assertEquals(1, result.createdRequestCount());
         assertEquals(0, result.failedRequestCount());
         assertEquals("keep-me", Files.readString(existingNote));
-        assertTrue(Files.exists(controllerDirectory.resolve("GET-order-files-id-OrderFileController.getById.yml")));
+        assertTrue(Files.exists(controllerDirectory.resolve("GET-samples-id-SampleController.getById.yml")));
     }
 
     @Test
     void shouldSkipExistingApiFileWithoutOverwriting() throws IOException {
         BrunoCollectionWriter writer = new BrunoCollectionWriter();
         Path projectDirectory = tempDir.resolve("collections").resolve("demo-project");
-        Path controllerDirectory = projectDirectory.resolve("OrderFileController");
+        Path controllerDirectory = projectDirectory.resolve("SampleController");
         Files.createDirectories(controllerDirectory);
-        Path existingRequestFile = controllerDirectory.resolve("GET-order-files-id-OrderFileController.getById.yml");
+        Path existingRequestFile = controllerDirectory.resolve("GET-samples-id-SampleController.getById.yml");
         Files.writeString(existingRequestFile, "existing-request", java.nio.charset.StandardCharsets.UTF_8);
 
         ControllerExportModel model = new ControllerExportModel(
-                "OrderFileController",
-                "订单文件",
+                "SampleController",
+                "示例接口",
                 "",
                 List.of(new EndpointExportModel(
-                        "OrderFileController.getById",
-                        "查询订单文件",
+                        "SampleController.getById",
+                        "查询示例接口",
                         "",
-                        List.of("/order-files/{id}"),
+                        List.of("/samples/{id}"),
                         Set.of("GET"),
                         List.of(new EndpointParameterModel("id", "", true, null, ParameterSource.PATH_VARIABLE, PsiType.INT)),
                         null,
@@ -225,19 +225,19 @@ class BrunoCollectionWriterTest {
     void shouldUpdateControllerFolderMetadataName() throws IOException {
         BrunoCollectionWriter writer = new BrunoCollectionWriter();
         Path projectDirectory = tempDir.resolve("collections").resolve("demo-project");
-        Path controllerDirectory = projectDirectory.resolve("OrderFileController");
+        Path controllerDirectory = projectDirectory.resolve("SampleController");
         Files.createDirectories(controllerDirectory);
         Files.writeString(controllerDirectory.resolve("folder.yml"), "info:\n  name: \"旧名称\"\n", java.nio.charset.StandardCharsets.UTF_8);
 
         ControllerExportModel model = new ControllerExportModel(
-                "OrderFileController",
-                "订单文件",
+                "SampleController",
+                "示例接口",
                 "",
                 List.of(new EndpointExportModel(
-                        "OrderFileController.getById",
-                        "查询订单文件",
+                        "SampleController.getById",
+                        "查询示例接口",
                         "",
-                        List.of("/order-files/{id}"),
+                        List.of("/samples/{id}"),
                         Set.of("GET"),
                         List.of(new EndpointParameterModel("id", "", true, null, ParameterSource.PATH_VARIABLE, PsiType.INT)),
                         null,
@@ -248,7 +248,7 @@ class BrunoCollectionWriterTest {
         writer.writeCollection(model, "demo project", projectDirectory, controllerDirectory);
 
         assertEquals(
-                "info:\n  name: \"订单文件\"\n",
+                "info:\n  name: \"示例接口\"\n",
                 Files.readString(controllerDirectory.resolve("folder.yml"))
         );
     }
@@ -257,17 +257,17 @@ class BrunoCollectionWriterTest {
     void shouldFallbackToControllerNameWhenSummaryIsBlank() throws IOException {
         BrunoCollectionWriter writer = new BrunoCollectionWriter();
         Path projectDirectory = tempDir.resolve("collections").resolve("demo-project");
-        Path controllerDirectory = projectDirectory.resolve("OrderFileController");
+        Path controllerDirectory = projectDirectory.resolve("SampleController");
 
         ControllerExportModel model = new ControllerExportModel(
-                "OrderFileController",
+                "SampleController",
                 "",
                 "",
                 List.of(new EndpointExportModel(
-                        "OrderFileController.getById",
-                        "查询订单文件",
+                        "SampleController.getById",
+                        "查询示例接口",
                         "",
-                        List.of("/order-files/{id}"),
+                        List.of("/samples/{id}"),
                         Set.of("GET"),
                         List.of(new EndpointParameterModel("id", "", true, null, ParameterSource.PATH_VARIABLE, PsiType.INT)),
                         null,
@@ -278,7 +278,7 @@ class BrunoCollectionWriterTest {
         writer.writeCollection(model, "demo project", projectDirectory, controllerDirectory);
 
         assertEquals(
-                "info:\n  name: \"OrderFileController\"\n",
+                "info:\n  name: \"SampleController\"\n",
                 Files.readString(controllerDirectory.resolve("folder.yml"))
         );
     }
@@ -287,7 +287,7 @@ class BrunoCollectionWriterTest {
     void shouldAppendProjectCollectionToExistingWorkspace() throws IOException {
         BrunoCollectionWriter writer = new BrunoCollectionWriter();
         Path projectDirectory = tempDir.resolve("collections").resolve("demo-project");
-        Path controllerDirectory = projectDirectory.resolve("OrderFileController");
+        Path controllerDirectory = projectDirectory.resolve("SampleController");
         Files.writeString(
                 tempDir.resolve("workspace.yml"),
                 """
@@ -297,8 +297,8 @@ class BrunoCollectionWriterTest {
                           type: workspace
 
                         collections:
-                          - name: "sch-order-service"
-                            path: "collections/sch-order-service"
+                          - name: "demo-service"
+                            path: "collections/demo-service"
 
                         specs:
 
@@ -310,14 +310,14 @@ class BrunoCollectionWriterTest {
         );
 
         ControllerExportModel model = new ControllerExportModel(
-                "OrderFileController",
-                "订单文件",
+                "SampleController",
+                "示例接口",
                 "",
                 List.of(new EndpointExportModel(
-                        "OrderFileController.getById",
-                        "查询订单文件",
+                        "SampleController.getById",
+                        "查询示例接口",
                         "",
-                        List.of("/order-files/{id}"),
+                        List.of("/samples/{id}"),
                         Set.of("GET"),
                         List.of(new EndpointParameterModel("id", "", true, null, ParameterSource.PATH_VARIABLE, PsiType.INT)),
                         null,
@@ -329,8 +329,8 @@ class BrunoCollectionWriterTest {
 
         String workspaceFile = Files.readString(tempDir.resolve("workspace.yml"));
         assertTrue(workspaceFile.contains("name: \"工作\""));
-        assertTrue(workspaceFile.contains("name: \"sch-order-service\""));
-        assertTrue(workspaceFile.contains("path: \"collections/sch-order-service\""));
+        assertTrue(workspaceFile.contains("name: \"demo-service\""));
+        assertTrue(workspaceFile.contains("path: \"collections/demo-service\""));
         assertTrue(workspaceFile.contains("name: \"demo-project\""));
         assertTrue(workspaceFile.contains("path: \"collections/demo-project\""));
         assertTrue(workspaceFile.contains("activeEnvironmentUid: 15kgepb00000000000000"));
@@ -340,7 +340,7 @@ class BrunoCollectionWriterTest {
     void shouldNotDuplicateExistingWorkspaceCollection() throws IOException {
         BrunoCollectionWriter writer = new BrunoCollectionWriter();
         Path projectDirectory = tempDir.resolve("collections").resolve("demo-project");
-        Path controllerDirectory = projectDirectory.resolve("OrderFileController");
+        Path controllerDirectory = projectDirectory.resolve("SampleController");
         Files.writeString(
                 tempDir.resolve("workspace.yml"),
                 """
@@ -361,14 +361,14 @@ class BrunoCollectionWriterTest {
         );
 
         ControllerExportModel model = new ControllerExportModel(
-                "OrderFileController",
-                "订单文件",
+                "SampleController",
+                "示例接口",
                 "",
                 List.of(new EndpointExportModel(
-                        "OrderFileController.getById",
-                        "查询订单文件",
+                        "SampleController.getById",
+                        "查询示例接口",
                         "",
-                        List.of("/order-files/{id}"),
+                        List.of("/samples/{id}"),
                         Set.of("GET"),
                         List.of(new EndpointParameterModel("id", "", true, null, ParameterSource.PATH_VARIABLE, PsiType.INT)),
                         null,

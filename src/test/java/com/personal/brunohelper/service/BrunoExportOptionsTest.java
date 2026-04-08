@@ -34,8 +34,8 @@ class BrunoExportOptionsTest {
                 projectDirectory
         );
         assertEquals(
-                Path.of("/workspace/collection-output/demo-project/OrderFileController"),
-                BrunoExportOptions.resolveControllerDirectory(projectDirectory, "OrderFileController")
+                Path.of("/workspace/collection-output/demo-project/SampleController"),
+                BrunoExportOptions.resolveControllerDirectory(projectDirectory, "SampleController")
         );
         assertEquals(
                 Path.of("/workspace/workspace.yml"),
