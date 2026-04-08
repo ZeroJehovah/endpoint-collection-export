@@ -1,5 +1,6 @@
 package com.personal.brunohelper.service;
 
+import com.personal.brunohelper.i18n.BrunoHelperBundle;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
@@ -11,8 +12,14 @@ class BrunoExportOptionsTest {
 
     @Test
     void shouldValidateGlobalBaseOutputDirectory() {
-        assertEquals("请输入接口集合基础输出目录。", BrunoExportOptions.validateBaseOutputDirectory("", false));
-        assertEquals("接口集合基础输出目录必须使用绝对路径。", BrunoExportOptions.validateBaseOutputDirectory("collection/output", false));
+        assertEquals(
+                BrunoHelperBundle.message("export.validation.baseOutput.blank"),
+                BrunoExportOptions.validateBaseOutputDirectory("", false)
+        );
+        assertEquals(
+                BrunoHelperBundle.message("export.validation.baseOutput.absolute"),
+                BrunoExportOptions.validateBaseOutputDirectory("collection/output", false)
+        );
         assertNull(BrunoExportOptions.validateBaseOutputDirectory("/workspace/collection-output", false));
     }
 

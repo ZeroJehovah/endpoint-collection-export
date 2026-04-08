@@ -1,5 +1,6 @@
 package com.personal.brunohelper.service;
 
+import com.personal.brunohelper.i18n.BrunoHelperBundle;
 import com.personal.brunohelper.model.ExportEndpointResult;
 import com.personal.brunohelper.model.ExportEndpointStatus;
 import com.personal.brunohelper.model.ExportReport;
@@ -32,20 +33,20 @@ class BrunoExportReportFormatterTest {
 
         String content = new BrunoExportReportFormatter().format(report);
 
-        assertTrue(content.contains("服务名: sch-order-service"));
-        assertTrue(content.contains("类名: OrderFileController"));
-        assertTrue(content.contains("类里的接口总数: 5"));
-        assertTrue(content.contains("执行导出的接口数量: 2"));
-        assertTrue(content.contains("跳过的接口数量: 1"));
-        assertTrue(content.contains("实际成功导出的接口数量: 1"));
-        assertTrue(content.contains("失败的接口数量: 0"));
-        assertTrue(content.contains("项目目录: D:\\Documents\\collections\\sch-order-service"));
-        assertTrue(content.contains("controller目录: D:\\Documents\\collections\\sch-order-service\\OrderFileController"));
-        assertTrue(content.contains("Collection Export Result"));
-        assertTrue(content.contains("Relative URL"));
-        assertTrue(content.contains("Method Name"));
-        assertTrue(content.contains("Export Result"));
-        assertTrue(content.contains("Endpoint Name"));
+        assertTrue(content.contains(BrunoHelperBundle.message("export.report.summary.service") + " sch-order-service"));
+        assertTrue(content.contains(BrunoHelperBundle.message("export.report.summary.class") + " OrderFileController"));
+        assertTrue(content.contains(BrunoHelperBundle.message("export.report.summary.total") + " 5"));
+        assertTrue(content.contains(BrunoHelperBundle.message("export.report.summary.selected") + " 2"));
+        assertTrue(content.contains(BrunoHelperBundle.message("export.report.summary.skipped") + " 1"));
+        assertTrue(content.contains(BrunoHelperBundle.message("export.report.summary.success") + " 1"));
+        assertTrue(content.contains(BrunoHelperBundle.message("export.report.summary.failed") + " 0"));
+        assertTrue(content.contains(BrunoHelperBundle.message("export.report.directory.project") + ": D:\\Documents\\collections\\sch-order-service"));
+        assertTrue(content.contains(BrunoHelperBundle.message("export.report.directory.controller") + ": D:\\Documents\\collections\\sch-order-service\\OrderFileController"));
+        assertTrue(content.contains(BrunoHelperBundle.message("export.report.title")));
+        assertTrue(content.contains(BrunoHelperBundle.message("export.report.table.relativeUrl")));
+        assertTrue(content.contains(BrunoHelperBundle.message("export.report.table.methodName")));
+        assertTrue(content.contains(BrunoHelperBundle.message("export.report.table.exportResult")));
+        assertTrue(content.contains(BrunoHelperBundle.message("export.report.table.endpointName")));
         assertTrue(content.contains("/order-files/:id"));
         assertTrue(content.contains("查询订单文件"));
         assertTrue(content.contains("SUCCESS"));
